@@ -1,5 +1,29 @@
 ;;; packages.el --- Moritz Scherer's Emacs setup.  -*- lexical-binding: t; -*-
 
+(let ((installed (package-installed-p 'all-the-icons)))
+  (use-package all-the-icons)
+  (unless installed (all-the-icons-install-fonts)))
+
+(use-package all-the-icons-dired
+  :after all-the-icons
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(set-face-attribute 'default nil :font "Menlo-13")
+
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+(use-package diminish
+  :config
+  (diminish 'visual-line-mode))
+
+(use-package rainbow-delimiters
+  :disabled
+  :hook ((prog-mode . rainbow-delimiters-mode)))
+
+(use-package centered-window
+  :custom
+  (cwm-centered-window-width 180))
+
 (use-package undo-tree)
 (global-undo-tree-mode)
 
@@ -32,5 +56,3 @@
   (interactive)
   (load-theme 'dracula))
 (add-hook 'after-init-hook 'dracula)
-
-

@@ -62,9 +62,86 @@
 ;; a buffer-local variable when set.
 (setq-default indent-tabs-mode nil)
 
+(set-charset-priority 'unicode)
+(prefer-coding-system 'utf-8-unix)
 
 (setq column-number-mode t)
 (setq isearch-lazy-count t)
+
+(delete-selection-mode t)
+(global-display-line-numbers-mode t)
+(column-number-mode)
+(savehist-mode)
+
+(require 'hl-line)
+(add-hook 'prog-mode-hook #'hl-line-mode)
+(add-hook 'text-mode-hook #'hl-line-mode)
+
+(setq
+ make-backup-files nil
+ auto-save-default nil
+ create-lockfiles nil)
+
+(setq custom-file (make-temp-name "/tmp/"))
+(setq custom-safe-themes t)
+
+(bind-key "C-s" #'isearch-forward-regexp)
+(bind-key "C-c s" #'isearch-forward-symbol)
+
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(setq require-final-newline t)
+(bind-key "C-c q" #'fill-paragraph)
+(bind-key "C-c Q" #'set-fill-column)
+
+(defun pt/indent-just-yanked ()
+  "Re-indent whatever you just yanked appropriately."
+  (interactive)
+  (exchange-point-and-mark)
+  (indent-region (region-beginning) (region-end))
+  (deactivate-mark))
+
+(bind-key "C-c I" #'pt/indent-just-yanked)
+
+(defalias 'view-emacs-news 'ignore)
+(defalias 'describe-gnu-project 'ignore)
+(defalias 'describe-copying 'ignore)
+
+(setq-default fill-column 100)
+
+(require 'tramp)
+(setq remote-file-name-inhibit-locks t)
+
+;; Needs to be called from recentf's :init
+;; todo: make this into a use-package invocation
+(defun pt/customize-tramp ()
+
+  (setq tramp-default-method "ssh"
+        tramp-verbose 1
+        remote-file-name-inhibit-cache nil
+        tramp-use-ssh-controlmaster-options nil
+        tramp-default-remote-shell "/bin/bash"
+        tramp-connection-local-default-shell-variables
+        '((shell-file-name . "/bin/bash")
+          (shell-command-switch . "-c")))
+
+  (connection-local-set-profile-variables 'tramp-connection-local-default-shell-profile
+                                          '((shell-file-name . "/bin/bash")
+                                            (shell-command-switch . "-c")))
+  )
+
+(use-package recentf
+  :pin gnu
+  :after dash
+  :init (pt/customize-tramp) ;; so that tramp urls work ok in recentf
+  :custom
+  ;; (recentf-exclude (-concat recentf-exclude '("\\elpa"
+  ;;                                             "private/tmp" ; to avoid custom files
+  ;;                                             "txt/roam"
+  ;;                                             "type-break"
+  ;;                                             )))
+  (recentf-max-saved-items 50)
+  (recentf-max-menu-items 30)
+  :config (recentf-mode))
 
 (add-to-list 'auto-mode-alist '("\\.hjson\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))

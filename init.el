@@ -10,9 +10,6 @@
   (scroll-bar-mode -1)
   (tooltip-mode -1))
 
-(when (eq system-type 'darwin)
-  (setq ns-auto-hide-menu-bar t))
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("ublt" . "https://elpa.ubolonton.org/packages/") t)
@@ -45,22 +42,5 @@
 (load-user-file "config.el")
 (load-user-file "snippets.el")
 (load-user-file "packages.el")
+(load-user-file "project.el")
 (load-user-file "lsp.el")
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("fe1c13d75398b1c8fd7fdd1241a55c286b86c3e4ce513c4292d01383de152cb7" default))
- '(lsp-clients-svlangserver-formatCommand "verible-verilog-format")
- '(lsp-clients-svlangserver-launchConfiguration "verilator verilator -sv --lint-only -Wall")
- '(package-selected-packages
-   '(direnv lsp-verilog lsp-pyright yasnippet-snippets use-package undo-tree sphinx-doc rustic pylint multiple-cursors magit lsp-ui latex-preview-pane impatient-mode flycheck-pycheckers flycheck-mypy exec-path-from-shell dracula-theme company cmake-mode clang-format async anzu)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
