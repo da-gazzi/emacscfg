@@ -1,0 +1,14 @@
+# name: module
+# key: module
+# group: verilog
+# --
+
+module ${1:module_name} #(
+)(
+
+);
+   $0
+   /*AUTOLOGIC*/
+   
+endmodule: $1
+

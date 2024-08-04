@@ -1,0 +1,8 @@
+# name: always_comb
+# key: always_comb
+# group: verilog
+# --
+
+always_comb begin
+
+end

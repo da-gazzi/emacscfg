@@ -1,0 +1,12 @@
+# name: always_ff
+# key: always_ff
+# group: verilog
+# --
+
+always_ff @(posedge ${1:clk_i} or negedge ${2:rst_ni}) begin
+   if (~$2) begin
+      $0
+   end else begin
+  
+   end
+end

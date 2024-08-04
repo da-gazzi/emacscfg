@@ -1,0 +1,157 @@
+# name: testbench
+# key: testbench
+# group: verilog
+# --
+
+\`include "simParams.sv"
+
+module tb_${1:module_name}();
+
+parameter STIMULI_FILE   = \"../../stimuli/$1_stimuli.txt\";
+parameter RESPONSE_FILE  = \"../../stimuli/$1_exp_responses.txt\";
+
+typedef struct packed {
+/*AUTOLOGIC*/
+} response_t;
+
+typedef struct packed{
+/*AUTOREGINPUT*/      
+} stimuli_t;
+
+
+//-------------------- Testbench signals --------------------
+
+logic                                                             EndOfSim_S;
+stimuli_t             stimuli[];
+stimuli_t             stimulus;
+response_t            exp_responses[];
+response_t            exp_response;
+
+logic                                                             clk;
+logic                                                             rst;
+
+integer                                                           error_counter;
+integer                                                           total_counter;                  
+
+response_t actual_response;
+
+//--------------------- Instantiate MUT ---------------------
+
+
+/*   $1 AUTO_TEMPLATE (
+.\\\(.*_.*\\\)o         (actual_response.\1o),
+.clk_i           (clk),
+.rst_ni          (rst),
+.\\\(.*_.*\\\)i         (stimulus.\1i),
+);
+*/
+
+
+$1 #(
+/*AUTOINSTPARAM*/)
+i_mut
+(
+/*AUTOINST*/
+);
+
+\`ifdef DUMMY_ON
+/*   $1 AUTO_TEMPLATE (
+
+.clk_i           (clk),
+.rst_ni          (rst),
+
+);
+*/
+
+$1 #(
+/*AUTOINSTPARAM*/)
+dummy                   
+(
+/*AUTOINST*/
+);
+`endif
+
+//------------------ Generate clock signal ------------------
+
+initial begin
+
+clk = 0;
+#T_CLK;
+rst = 1'b1;
+#T_CLK;
+rst = 1'b0;
+#T_CLK;
+rst = 1'b1;
+#T_CLK;
+
+do begin
+clk = 1'b1; #T_CLK_HI;
+clk = 1'b0; #T_CLK_LO;
+end while (EndOfSim_S == 1'b0);
+end
+
+//------------------- Stimuli Application -------------------
+
+initial begin
+EndOfSim_S = 0;
+stimulus = '0;  
+//Read stimuli from file
+$display("Loading Stimuli from %s", STIMULI_FILE);
+$readmemb(STIMULI_FILE, stimuli);
+
+//Apply the stimuli
+foreach(stimuli[i]) begin
+//Wait for one clock cycle
+@(posedge clk);
+//Delay application by the stimuli application delay
+#T_APPL_DEL;
+stimulus = stimuli[i];
+end
+
+//Wait one additional cycle for response acquisition to finish
+@(posedge clk);
+//Terminate simulation by stoping the clock
+EndOfSim_S = 1;
+end // initial begin
+
+//------------------- Response Acquisition -------------------
+initial begin
+//Read expected responses
+$display("Loading expected responses from %s", RESPONSE_FILE);
+$readmemb(RESPONSE_FILE, exp_responses);
+error_counter = 0;
+total_counter = 0;
+
+//Compare responses in each cycle
+foreach(exp_responses[i]) begin
+//Wait for one clock cycle
+@(posedge clk);
+//Delay response acquistion by the stimuli acquistion delay
+#T_ACQ_DEL;
+
+exp_response = exp_responses[i]; //Use a helper signal to track the current expected response
+//in modelsim
+
+//Compare results
+// The ==? operator treats 'x' as don't care values wheras the normal == would
+// result with 'x'
+total_counter = total_counter + 1;
+
+if(actual_response  !=? exp_response) begin
+$error("Mismatch between expected and actual response. Was %b but should be %b, stimuli %d", actual_response, exp_response,i);
+error_counter = error_counter + 1;
+end  
+end
+
+$display("Tested %d stimuli",total_counter); 
+
+if(error_counter == 0) begin
+$display("No errors in testbench");
+end else begin
+$display("%d errors in testbench", error_counter);
+end
+
+$info("Simulation finished");
+end
+
+endmodule : tb_$1

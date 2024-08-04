@@ -1,0 +1,10 @@
+# name: package
+# key: package
+# group: verilog
+# --
+
+package ${1:package_name};
+   $0
+
+endpackage: $1
+

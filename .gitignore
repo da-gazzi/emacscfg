@@ -1,0 +1,9 @@
+*~
+session*
+tramp
+transient
+*#
+elpa
+autoinsert.el
+.mc-lists.el
+.lsp-session-v1

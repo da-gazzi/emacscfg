@@ -1,0 +1,12 @@
+# name: submodule
+# key: submodule
+# group: verilog
+# --
+
+${2:submodule_name} #(
+                               /*AUTOINSTPARAM*/
+                                )
+ ${1:name}
+(
+                               /*AUTOINST*/
+                                 );
