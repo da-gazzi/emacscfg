@@ -44,3 +44,5 @@
 (load-user-file "packages.el")
 (load-user-file "project.el")
 (load-user-file "lsp.el")
+
+(provide 'init)

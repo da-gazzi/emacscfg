@@ -117,17 +117,10 @@
 
   (setq tramp-default-method "ssh"
         tramp-verbose 1
-        remote-file-name-inhibit-cache nil
-        tramp-use-ssh-controlmaster-options nil
-        tramp-default-remote-shell "/bin/bash"
-        tramp-connection-local-default-shell-variables
-        '((shell-file-name . "/bin/bash")
-          (shell-command-switch . "-c")))
-
-  (connection-local-set-profile-variables 'tramp-connection-local-default-shell-profile
-                                          '((shell-file-name . "/bin/bash")
-                                            (shell-command-switch . "-c")))
+        remote-file-name-inhibit-cache nil)
   )
+
+(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
 
 (use-package recentf
   :pin gnu
