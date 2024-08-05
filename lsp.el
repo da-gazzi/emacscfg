@@ -19,6 +19,7 @@
 (use-package eglot
   :hook ((python-mode . eglot-ensure)
          (cmake-mode . eglot-ensure)
+         (verilog-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
          (c-mode . eglot-ensure)
          )
@@ -98,11 +99,21 @@
   (verilog-ext-mode-setup)
   (verilog-ext-eglot-set-server 've-verible-ls))
 
-(setq verilog-ext-tags-backend 'tree-sitter)
-(setq verilog-ext-formatter-column-limit 80)
+(setq verilog-ext-formatter-column-limit 100)
 
+(defun verilog-formatter-hook ()
+  (when (eq major-mode 'verilog-mode)
+    (verilog-ext-formatter-run))
+  )
+
+(add-hook 'before-save-hook #'verilog-formatter-hook)
+
+(treesit-install-language-grammar ('verilog))
+
+(unless (treesit-language-available-p 'verilog)
+  (treesit-install-language-grammar 'verilog)
+  )
 (use-package verilog-ts-mode)
-(treesit-language-available-p 'verilog)
 (add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
-
+(setq verilog-ext-tags-backend 'tree-sitter)
 ;;; todo: add seave hook to format!

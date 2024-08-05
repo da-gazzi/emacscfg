@@ -13,8 +13,7 @@
 
 (bind-key "C-s" #'isearch-forward-regexp)
 (bind-key "C-c s" #'isearch-forward-symbol)
-(bind-key "C-c q" #'fill-paragraph)
-(bind-key "C-c Q" #'set-fill-column)
+
 
 (defun pt/indent-just-yanked ()
   "Re-indent whatever you just yanked appropriately."
