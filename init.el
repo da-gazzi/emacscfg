@@ -53,5 +53,6 @@
 (load-user-file "packages.el")
 (load-user-file "project.el")
 (load-user-file "lsp.el")
+(load-user-file "keybindings.el")
 
 (provide 'init)

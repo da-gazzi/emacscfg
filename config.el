@@ -83,22 +83,8 @@
 (setq custom-file (make-temp-name "/tmp/"))
 (setq custom-safe-themes t)
 
-(bind-key "C-s" #'isearch-forward-regexp)
-(bind-key "C-c s" #'isearch-forward-symbol)
-
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 (setq require-final-newline t)
-(bind-key "C-c q" #'fill-paragraph)
-(bind-key "C-c Q" #'set-fill-column)
-
-(defun pt/indent-just-yanked ()
-  "Re-indent whatever you just yanked appropriately."
-  (interactive)
-  (exchange-point-and-mark)
-  (indent-region (region-beginning) (region-end))
-  (deactivate-mark))
-
-(bind-key "C-c I" #'pt/indent-just-yanked)
 
 (defalias 'view-emacs-news 'ignore)
 (defalias 'describe-gnu-project 'ignore)

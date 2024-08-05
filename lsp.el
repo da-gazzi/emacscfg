@@ -3,8 +3,7 @@
 (use-package xref
   :pin gnu
   :custom (xref-auto-jump-to-first-xref t)
-  :bind (("s-r" . #'xref-find-references)
-         ("C-c q" . #'xref-find-definitions)
+  :bind (("C-c q" . #'xref-find-definitions)
          ("C-c w" . #'xref-find-references)
          ("s-[" . #'xref-go-back)
          ("s-]" . #'xref-go-forward)))
@@ -70,5 +69,3 @@
   ;; Use company with text and programming modes.
     :hook ((text-mode . company-mode)
            (prog-mode . company-mode)))
-
-(global-set-key (kbd "C-<tab>") 'completion-at-point)

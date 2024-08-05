@@ -11,9 +11,6 @@
   :diminish yas-minor-mode
   :config (yas-global-mode)
   :custom (yas-prompt-functions '(yas-completing-prompt)))
-;; YAS keybinds
-(global-set-key (kbd "C-x C-a") 'scheremo/insert_author)
-(global-set-key (kbd "C-x y") 'yas-insert-snippet)
 (eval-after-load 'yasnippet
   '(progn
      (define-key yas-keymap (kbd "TAB") 'yas-next-field)))
