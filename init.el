@@ -18,6 +18,8 @@
 (unless (package-installed-p 'gnu-elpa-keyring-update)
   (setq package-check-signature nil))
 
+(setq package-install-upgrade-built-in t)
+
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("ublt" . "https://elpa.ubolonton.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t) ; Org-mode's repository

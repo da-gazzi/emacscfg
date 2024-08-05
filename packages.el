@@ -55,5 +55,5 @@
 (use-package dracula-theme)
 (defun dracula()
   (interactive)
-  (load-theme 'dracula))
+  (load-theme 'dracula t))
 (add-hook 'after-init-hook 'dracula)
