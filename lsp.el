@@ -18,7 +18,6 @@
 
 (use-package eglot
   :hook ((python-mode . eglot-ensure)
-         (verilog-mode . eglot-ensure)
          (cmake-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
          (c-mode . eglot-ensure)
@@ -69,3 +68,41 @@
   ;; Use company with text and programming modes.
     :hook ((text-mode . company-mode)
            (prog-mode . company-mode)))
+
+;;; VERILOG
+
+(use-package verilog-ext
+  :hook ((verilog-mode . verilog-ext-mode))
+  :init
+  ;; Can also be set through `M-x RET customize-group RET verilog-ext':
+  ;; Comment out/remove the ones you do not need
+  (setq verilog-ext-feature-list
+        '(font-lock
+          xref
+          capf
+          hierarchy
+          eglot
+          beautify
+          navigation
+          template
+          formatter
+          compilation
+          imenu
+          which-func
+          hideshow
+          typedefs
+          time-stamp
+          block-end-comments
+          ports))
+  :config
+  (verilog-ext-mode-setup)
+  (verilog-ext-eglot-set-server 've-verible-ls))
+
+(setq verilog-ext-tags-backend 'tree-sitter)
+(setq verilog-ext-formatter-column-limit 80)
+
+(use-package verilog-ts-mode)
+(treesit-language-available-p 'verilog)
+(add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
+
+;;; todo: add seave hook to format!
