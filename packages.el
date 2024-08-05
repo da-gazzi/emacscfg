@@ -1,5 +1,7 @@
 ;;; packages.el --- Moritz Scherer's Emacs setup.  -*- lexical-binding: t; -*-
 
+(use-package verilog-mode)
+
  (use-package tree-sitter
     :config (global-tree-sitter-mode))
 
