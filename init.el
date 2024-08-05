@@ -6,17 +6,18 @@
 ;;; Code:
 
 
-;; Workaround the TLS problems with ELPA in older versions
-(if (version< emacs-version "29.0")
-    '((setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-      (setq package-check-signature nil)))
-
 (when (window-system)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (tooltip-mode -1))
 
 (require 'package)
+;; Workaround the TLS problems with ELPA in older versions
+(unless '(version> emacs-version "29.0")
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
+(unless (package-installed-p 'gnu-elpa-keyring-update)
+  (setq package-check-signature nil))
+
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("ublt" . "https://elpa.ubolonton.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t) ; Org-mode's repository
