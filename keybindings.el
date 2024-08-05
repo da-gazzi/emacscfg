@@ -30,3 +30,4 @@
 (global-set-key (kbd "C-x y") 'yas-insert-snippet)
 
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
+(global-set-key (kbd "s-u") 'revert-buffer)
