@@ -17,6 +17,9 @@
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 (unless (package-installed-p 'gnu-elpa-keyring-update)
   (setq package-check-signature nil))
+(unless '(version> emacs-version "29.0")
+  (package-install 'gnu-elpa-keyring-update))
+
 
 (setq package-install-upgrade-built-in t)
 
