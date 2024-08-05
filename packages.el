@@ -8,7 +8,8 @@
   :after all-the-icons
   :hook (dired-mode . all-the-icons-dired-mode))
 
-(set-face-attribute 'default nil :font "Menlo-13")
+;; Let the OS determine what monospace means...
+(set-face-attribute 'default nil :font "monospace")
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 

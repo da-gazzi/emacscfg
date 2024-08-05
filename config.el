@@ -29,8 +29,6 @@
  ;; the documentation advises against setting this variable
  ;; the documentation can get bent imo
  use-short-answers t
- ;; my source directory
- default-directory "~/"
  ;; eke out a little more scrolling performance
  fast-but-imprecise-scrolling t
  ;; prefer newer elisp files
