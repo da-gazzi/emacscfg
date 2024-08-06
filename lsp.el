@@ -18,7 +18,6 @@
 
 (use-package eglot
   :hook ((python-mode . eglot-ensure)
-         (cmake-mode . eglot-ensure)
          (verilog-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
          (c-mode . eglot-ensure)
@@ -108,12 +107,14 @@
 
 (add-hook 'before-save-hook #'verilog-formatter-hook)
 
-(treesit-install-language-grammar ('verilog))
+(setq verilog-ext-tags-backend 'builtin)
 
-(unless (treesit-language-available-p 'verilog)
-  (treesit-install-language-grammar 'verilog)
-  )
-(use-package verilog-ts-mode)
-(add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
-(setq verilog-ext-tags-backend 'tree-sitter)
-;;; todo: add seave hook to format!
+;; (treesit-install-language-grammar ('verilog))
+
+;; (unless (treesit-language-available-p 'verilog)
+;;   (treesit-install-language-grammar 'verilog)
+;;   )
+;; (use-package verilog-ts-mode)
+;; (add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
+;; (setq verilog-ext-tags-backend 'tree-sitter)
+;; ;;; todo: add seave hook to format!
