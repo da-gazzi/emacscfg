@@ -48,9 +48,9 @@
 
 (use-package cmake-mode)
 
-(use-package direnv
-  :config (direnv-mode)
-  :custom (direnv-always-show-summary nil))
+;; (use-package direnv
+;;   :config (direnv-mode)
+;;   :custom (direnv-always-show-summary nil))
 
 (use-package dracula-theme)
 (defun dracula()
