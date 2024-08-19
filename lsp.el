@@ -152,18 +152,6 @@
                    "-"))
       apheleia-formatters)
 
-
-(defun verilog-formatter-hook ()
-  (when (eq major-mode 'verilog-mode)
-    (verilog-ext-formatter-run))
-  )
-
-(add-hook 'before-save-hook #'verilog-formatter-hook)
-
-;; (use-package apheleia)
-
-(setq verilog-ext-tags-backend 'builtin)
-
 ;; (treesit-install-language-grammar ('verilog))
 
 ;; (unless (treesit-language-available-p 'verilog)
