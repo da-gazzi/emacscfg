@@ -46,6 +46,8 @@
   :bind (:map markdown-mode-map ("C-c C-s a" . markdown-table-align))
   :mode ("\\.md$" . gfm-mode))
 
+(use-package apheleia)
+
 (use-package cmake-mode)
 
 ;; (use-package direnv
