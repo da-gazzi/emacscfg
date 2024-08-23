@@ -6,6 +6,7 @@
 
 ;; Magit keybinds
 (global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-c b") 'smerge-keep-all)
 (global-set-key (kbd "C-c m") 'smerge-keep-mine)
 (global-set-key (kbd "C-c n") 'smerge-next)
 (global-set-key (kbd "C-c p") 'smerge-previous)
