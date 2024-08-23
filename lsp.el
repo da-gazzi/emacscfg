@@ -26,7 +26,8 @@
          ("C-c q" . #'xref-find-definitions)
          ("C-c w" . #'xref-find-references)
          ("C-c a" . #'eglot-rename)
-         ("C-c C-c" . #'eglot-code-actions))
+         ("C-c C-c" . #'eglot-code-actions)
+         ("C-c C-l" . #'eglot-format-buffer))
   :custom
   (eglot-confirm-server-initiated-edits nil)
   (eglot-autoshutdown t)
@@ -70,3 +71,4 @@
            (prog-mode . company-mode)))
 
 (load-user-file "lsp/verilog.el")
+(load-user-file "lsp/c.el")
