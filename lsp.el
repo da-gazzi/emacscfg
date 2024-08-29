@@ -34,6 +34,8 @@
   (eglot-send-changes-idle-time 0.1)
   )
 
+(fset #'jsonrpc--log-event #'ignore)
+
 (use-package flymake
   :config
   (setq elisp-flymake-byte-compile-load-path load-path)
