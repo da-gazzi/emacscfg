@@ -2,8 +2,4 @@
 # name: author_header
 # key: author_header
 # --
-# Copyright `(format-time-string "%Y")`$0 ETH Zurich and University of Bologna.
-# Licensed under the Apache License, Version 2.0, see LICENSE for details.
-# SPDX-License-Identifier: Apache-2.0
-#
-# Moritz Scherer <scheremo@iis.ee.ethz.ch>
+# Copyright `(format-time-string "%Y")`$0 Mosaic SoC. All rights reserved.

@@ -2,8 +2,4 @@
 # name: author_header
 # key: author_header
 # --
-// Copyright `(format-time-string "%Y")`$0 ETH Zurich and University of Bologna.
-// Solderpad Hardware License, Version 0.51, see LICENSE for details.
-// SPDX-License-Identifier: SHL-0.51
-//
-// Moritz Scherer <scheremo@iis.ee.ethz.ch>
+// Copyright `(format-time-string "%Y")`$0 Mosaic SoC. All rights reserved.

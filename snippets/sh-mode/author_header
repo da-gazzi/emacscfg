@@ -6,12 +6,8 @@
  #
  # File: `(file-name-nondirectory (buffer-file-name))`$0
  #
- # Last edited: `(format-time-string "%d.%m.%Y")`$0        
- # 
- # Copyright (C) `(format-time-string "%Y")`$0, ETH Zurich and University of Bologna. All rights reserved.
+ # Last edited: `(format-time-string "%d.%m.%Y")`$0
  #
- # Author: Moritz Scherer, ETH Zurich
- #
- # All right reserved
+ # Copyright (C) `(format-time-string "%Y")`$0, Mosaic SoC. All rights reserved.. All rights reserved.
  #
  # ----------------------------------------------------------------------

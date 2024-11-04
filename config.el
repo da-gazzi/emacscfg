@@ -2,6 +2,8 @@
 
 ;;; General purpose configuration
 
+(set-frame-font "monospace 16" nil t)
+
 (setq gc-cons-threshold 100000000)
 (setq max-specpdl-size 5000)
 (setq read-process-output-max (* 1024000 1024)) ;; 1mb

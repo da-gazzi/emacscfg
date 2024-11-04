@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: newacronym
+# key: newacronym
+# --
+\newacronym[plural=${1:$(upcase yas-text)}s, firstplural=$2s (${1:$(upcase yas-text)}s)]{${1:short}}{${1:$(upcase yas-text)}}{${2:long}}
