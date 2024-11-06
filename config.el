@@ -106,7 +106,7 @@
         remote-file-name-inhibit-cache nil)
   )
 
-(add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+(setopt tramp-remote-path '(tramp-own-remote-path))
 
 (use-package recentf
   :pin gnu

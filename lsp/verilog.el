@@ -27,6 +27,7 @@
 
 (defun override-verilog-ext-formatter ()
   (interactive)
+  (setq apheleia-formatters (assq-delete-all 'verible apheleia-formatters))
   (push '(verible . ("verible-verilog-format"
                      "--column_limit" (number-to-string verible-formatter-column-limit)
                      "--indentation_spaces" (number-to-string verible-formatter-indentation-spaces)

@@ -46,7 +46,9 @@
   :bind (:map markdown-mode-map ("C-c C-s a" . markdown-table-align))
   :mode ("\\.md$" . gfm-mode))
 
-(use-package apheleia)
+(use-package apheleia
+  :custom (apheleia-remote-algorithm 'local)
+  )
 
 (use-package cmake-mode)
 
