@@ -3,3 +3,5 @@
 # key: author_header
 # --
 // Copyright `(format-time-string "%Y")`$0 Mosaic SoC. All rights reserved.
+//
+// Moritz Scherer <moritz@mosaic-soc.com>

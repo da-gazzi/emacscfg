@@ -22,7 +22,7 @@
  ;; Prompts should go in the minibuffer, not in a GUI.
  use-dialog-box nil
  ;; Fix undo in commands affecting the mark.
- mark-even-if-inactive nil
+ mark-even-if-inactive t
  ;; Let C-k delete the whole line.
  kill-whole-line t
  ;; search should be case-sensitive by default
@@ -106,7 +106,7 @@
         remote-file-name-inhibit-cache nil)
   )
 
-(setopt tramp-remote-path '(tramp-own-remote-path))
+;; (setopt tramp-remote-path '(tramp-own-remote-path))
 
 (use-package recentf
   :pin gnu

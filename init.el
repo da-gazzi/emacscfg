@@ -51,11 +51,13 @@
   "Load a file in current user's configuration directory"
   (load-file (expand-file-name file user-init-dir)))
 
+(load-user-file "bootstrap-straight.el")
 (load-user-file "config.el")
 (load-user-file "snippets.el")
 (load-user-file "packages.el")
 (load-user-file "project.el")
 (load-user-file "lsp.el")
 (load-user-file "keybindings.el")
+(load-user-file "gpt.el")
 
 (provide 'init)

@@ -1,5 +1,7 @@
 ;;; keybindings.el --- Moritz Scherer's emacs setup
 
+(global-unset-key (kbd "M-u"))
+
 ;; Multi-Cursor keybinds
 (global-set-key (kbd "C-,") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-.") 'mc/mark-previous-like-this)
