@@ -125,11 +125,9 @@ Otherwise, use the output of `git rev-parse --show-toplevel`."
 
     (message "bender-dir: %s" bender-dir)
     (message "in path? %s" (file-exists-p bender-dir))
-    (message "str prefix? %s" (string-prefix-p (expand-file-name bender-dir) (expand-file-name buffer-dir)))
 
     (if (and bender-dir
-             (file-exists-p bender-dir)
-             (string-prefix-p (expand-file-name bender-dir) (expand-file-name buffer-dir)))
+             (file-exists-p bender-dir))
         (file-name-directory (directory-file-name bender-dir)) ;; Parent directory of `.bender`
       (let ((git-top-level (string-trim
                             (shell-command-to-string "git rev-parse --show-toplevel"))))
@@ -153,12 +151,19 @@ The file is created in the top-level project directory containing FILE-PATH."
 
 (defun bender-verilog-file-list-path ()
   "Get the path to the Verilog file list in the top-level project directory.
-Generate the file list if it doesn't exist."
+Generate the file list if it doesn't exist or if `Bender.yml` or `Bender.lock` have changed."
   (let* ((top-level-root (bender-get-top-level-project-root))
-         (file-path (expand-file-name ".verible.f" top-level-root)))
-    (message "Resolved file list path: %s" file-path)
-    (unless (file-exists-p file-path)
-      (message ".verible.f does not exist. Generating...")
+         (file-path (expand-file-name ".verible.f" top-level-root))
+         (bender-files `((,(expand-file-name "Bender.yml" top-level-root) . ,(file-attribute-modification-time (file-attributes (expand-file-name "Bender.yml" top-level-root))))
+                         (,(expand-file-name "Bender.lock" top-level-root) . ,(file-attribute-modification-time (file-attributes (expand-file-name "Bender.lock" top-level-root))))))
+         (verible-f-modtime (and (file-exists-p file-path)
+                                 (file-attribute-modification-time (file-attributes file-path)))))
+    ;; Check if `.verible.f` needs to be regenerated
+    (when (or (not (file-exists-p file-path)) ;; `.verible.f` does not exist
+              (cl-some (lambda (bender-file)
+                         (time-less-p verible-f-modtime (cdr bender-file))) ;; Bender files are newer
+                       bender-files))
+      (message "Bender.yml or Bender.lock has changed, regenerating .verible.f...")
       (bender-generate-file-list file-path))
     file-path))
 
