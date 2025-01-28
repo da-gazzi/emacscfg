@@ -18,20 +18,39 @@
     (message "Pyright is not installed. Installing via npm...")
     (call-process-shell-command "npm install -g pyright")))
 
+(defun my-run-formatter (command args)
+  "Run a formatter COMMAND with ARGS on the current buffer content.
+The formatter is run in a temporary buffer, and the result is applied back to the current buffer
+only if no conflicts with unsaved changes are detected."
+  (let ((original-content (buffer-string)) ;; Save current content
+        (formatted-content nil))
+    ;; Run the formatter in a temporary buffer
+    (with-temp-buffer
+      (insert original-content)
+      (let ((exit-code (apply #'call-process-region (point-min) (point-max)
+                              command t t nil args)))
+        (if (zerop exit-code)
+            (setq formatted-content (buffer-string))
+          (message "Formatter %s failed with exit code %d" command exit-code))))
+    ;; Only apply changes if the content has not been modified
+    (when (and formatted-content
+               (string= original-content (buffer-string)))
+      (erase-buffer)
+      (insert formatted-content))))
+
 (defun my-python-formatting-passes ()
-  "Run autoflake, yapf, and isort on the current buffer."
+  "Run autoflake, yapf, and isort on the current buffer safely."
   (when (eq major-mode 'python-mode)
-    (let ((buffer-file (buffer-file-name)))
-      (when buffer-file
-        ;; Apply autoflake
-        (call-process "autoflake" nil "*autoflake-output*" nil
-                      "--remove-all-unused-imports" "--ignore-init-module-imports" buffer-file)
-        ;; Apply yapf
-        (call-process "yapf" nil "*yapf-output*" nil buffer-file)
-        ;; Apply isort
-        (call-process "isort" nil "*isort-output*" nil buffer-file)
-        ;; Reload the buffer to reflect changes
-        (revert-buffer t t t)))))
+    (let ((original-point (point))) ;; Save the cursor position
+      ;; Apply autoflake
+      (my-run-formatter "autoflake" '("--remove-all-unused-imports"
+                                       "--ignore-init-module-imports"
+                                       "--stdin" "--stdout"))
+      ;; Apply yapf
+      (my-run-formatter "yapf" '("--quiet"))
+      ;; Apply isort
+      (my-run-formatter "isort" '("--profile" "black" "--stdout"))
+      (goto-char original-point)))) ;; Restore the cursor position
 
 (defun my-setup-python-formatting ()
   "Set up custom formatting passes for Python."
@@ -39,5 +58,4 @@
 
 ;; Add the setup to Python mode
 (add-hook 'python-mode-hook 'my-setup-python-formatting)
-
 (add-hook 'python-mode-hook 'ensure-pyright-installed)
