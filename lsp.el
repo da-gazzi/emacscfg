@@ -74,3 +74,4 @@
 
 (load-user-file "lsp/verilog.el")
 (load-user-file "lsp/c.el")
+(load-user-file "lsp/python.el")
