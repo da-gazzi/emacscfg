@@ -70,51 +70,6 @@
   (verilog-ts-install-grammar)
   )
 
-;; (use-package verilog-ext
-;;   :hook ((verilog-ts-mode . verilog-ext-mode))
-;;   :init
-;;   ;; Can also be set through `M-x RET customize-group RET verilog-ext':
-;;   ;; Comment out/remove the ones you do not need
-;;   (setq verilog-ext-feature-list
-;;         '(font-lock
-;;           xref
-;;           capf
-;;           hierarchy
-;;           eglot
-;;           beautify
-;;           navigation
-;;           template
-;;           formatter
-;;           compilation
-;;           imenu
-;;           which-func
-;;           hideshow
-;;           typedefs
-;;           time-stamp
-;;           block-end-comments
-;;           ports))
-;;   :config
-;;   (verilog-ext-mode-setup)
-;;   (verilog-ext-eglot-set-server 've-verible-ls)
-;;   (override-verilog-ext-formatter))
-
-;; (setq verilog-ext-tags-backend 'builtin)
-
-;; (with-eval-after-load 'eglot
-;;   (add-to-list 'eglot-server-programs
-;;                '((c-mode c++-mode)
-;;                  . ("clangd"
-;;                     "-j=8"
-;;                     "--log=error"
-;;                     "--malloc-trim"
-;;                     "--background-index"
-;;                     "--clang-tidy"
-;;                     "--cross-file-rename"
-;;                     "--completion-style=detailed"
-;;                     "--pch-storage=memory"
-;;                     "--header-insertion=never"
-;;                     "--header-insertion-decorators=0"))))
-
 (defun bender-get-top-level-project-root ()
   "Determine the top-level project root for the current buffer.
 If the path contains `.bender` and the current buffer's file is within its hierarchy,
