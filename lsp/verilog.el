@@ -173,9 +173,9 @@ This ensures the Verible language server gets the correct `--file_list_path`."
   (let ((file-list-path (bender-verilog-file-list-path)))
     (message "Setting up eglot for Verilog with file list path: %s" file-list-path)
     (setq-local eglot-server-programs
-                `((verilog-mode . ("verible-verilog-ls"
+                `((verilog-ts-mode . ("verible-verilog-ls"
                                    "--file_list_path"
-                                   ,file-list-path))))))
+                                   ,(file-local-name file-list-path)))))))
 
 ;; Add a hook to reset eglot-server-programs and run bender-verilog-file-list-path
 (add-hook 'verilog-mode-hook #'bender-setup-verilog-eglot)
