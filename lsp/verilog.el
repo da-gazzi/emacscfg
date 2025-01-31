@@ -5,7 +5,6 @@
 (straight-use-package 'use-package)
 (use-package verilog-mode
   :straight (:repo "veripool/verilog-mode"))
-(use-package verilog-ext)
 (use-package verilog-ts-mode)
 
 (setq verible-formatter-indentation-spaces 2)
@@ -29,40 +28,6 @@
 (setq verible-formatter-port_declarations_alignment "align")
 (setq verible-formatter-port_declarations_indentation "indent")
 (setq verible-formatter-struct_union_members_alignment "align")
-
-(defun override-verilog-ext-formatter ()
-  (interactive)
-  (push '(verible . ("verible-verilog-format"
-                     "--column_limit" (number-to-string verible-formatter-column-limit)
-                     "--indentation_spaces" (number-to-string verible-formatter-indentation-spaces)
-                     "--line_break_penalty" (number-to-string verible-formatter-line-break-penalty)
-                     "--over_column_limit_penalty" (number-to-string verible-formatter-over-column-limit-penalty)
-                     "--wrap_spaces" (number-to-string verible-formatter-wrap-spaces)
-
-                     "--assignment_statement_alignment"  verible-formatter-assignment_statement_alignment
-                     "--case_items_alignment"  verible-formatter-case_items_alignment
-                     "--class_member_variable_alignment"  verible-formatter-class_member_variable_alignment
-                     "--distribution_items_alignment"  verible-formatter-distribution_items_alignment
-                     "--enum_assignment_statement_alignment"  verible-formatter-enum_assignment_statement_alignment
-                     "--formal_parameters_alignment"  verible-formatter-formal_parameters_alignment
-                     "--formal_parameters_indentation"  verible-formatter-formal_parameters_indentation
-                     "--module_net_variable_alignment"  verible-formatter-module_net_variable_alignment
-                     "--named_parameter_alignment"  verible-formatter-named_parameter_alignment
-                     "--named_parameter_indentation"  verible-formatter-named_parameter_indentation
-                     "--named_port_alignment"  verible-formatter-named_port_alignment
-                     "--named_port_indentation"  verible-formatter-named_port_indentation
-                     "--port_declarations_alignment"  verible-formatter-port_declarations_alignment
-                     "--port_declarations_indentation"  verible-formatter-port_declarations_indentation
-                     "--struct_union_members_alignment"  verible-formatter-struct_union_members_alignment
-                     ;; "--compact_indexing_and_selections"  (number-to-string verible-formatter-compact_indexing_and_selections)
-                     ;; "--expand_coverpoints"  verible-formatter-expand_coverpoints
-                     ;; "--try_wrap_long_lines"  verible-formatter-try_wrap_long_lines
-                     ;; "--wrap_end_else_clauses"  verible-formatter-wrap_end_else_clauses
-                     ;; "--port_declarations_right_align_packed_dimensions"  verible-formatter-port_declarations_right_align_packed_dimensions
-                     ;; "--port_declarations_right_align_unpacked_dimensions"  verible-formatter-port_declarations_right_align_unpacked_dimensions
-                     "-"))
-        apheleia-formatters)
-  )
 
 (use-package verilog-ts-mode)
 (add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
@@ -129,8 +94,50 @@ This ensures the Verible language server gets the correct `--file_list_path`."
     (message "Setting up eglot for Verilog with file list path: %s" file-list-path)
     (setq-local eglot-server-programs
                 `((verilog-ts-mode . ("verible-verilog-ls"
-                                   "--file_list_path"
-                                   ,(file-local-name file-list-path)))))))
+                                      "--file_list_path"
+                                      ,(file-local-name file-list-path)
+                                      "--column_limit" (number-to-string verible-formatter-column-limit)
+                                      "--indentation_spaces" (number-to-string verible-formatter-indentation-spaces)
+                                      "--line_break_penalty" (number-to-string verible-formatter-line-break-penalty)
+                                      "--over_column_limit_penalty" (number-to-string verible-formatter-over-column-limit-penalty)
+                                      "--wrap_spaces" (number-to-string verible-formatter-wrap-spaces)
 
-;; Add a hook to reset eglot-server-programs and run bender-verilog-file-list-path
-(add-hook 'verilog-mode-hook #'bender-setup-verilog-eglot)
+                                      "--assignment_statement_alignment"  verible-formatter-assignment_statement_alignment
+                                      "--case_items_alignment"  verible-formatter-case_items_alignment
+                                      "--class_member_variable_alignment"  verible-formatter-class_member_variable_alignment
+                                      "--distribution_items_alignment"  verible-formatter-distribution_items_alignment
+                                      "--enum_assignment_statement_alignment"  verible-formatter-enum_assignment_statement_alignment
+                                      "--formal_parameters_alignment"  verible-formatter-formal_parameters_alignment
+                                      "--formal_parameters_indentation"  verible-formatter-formal_parameters_indentation
+                                      "--module_net_variable_alignment"  verible-formatter-module_net_variable_alignment
+                                      "--named_parameter_alignment"  verible-formatter-named_parameter_alignment
+                                      "--named_parameter_indentation"  verible-formatter-named_parameter_indentation
+                                      "--named_port_alignment"  verible-formatter-named_port_alignment
+                                      "--named_port_indentation"  verible-formatter-named_port_indentation
+                                      "--port_declarations_alignment"  verible-formatter-port_declarations_alignment
+                                      "--port_declarations_indentation"  verible-formatter-port_declarations_indentation
+                                      "--struct_union_members_alignment"  verible-formatter-struct_union_members_alignment
+                                      ))))))
+
+(defun my-run-verilog-formatter ()
+  "Run `eglot-format-buffer` on the current buffer safely."
+  (when (and (derived-mode-p 'verilog-mode 'verilog-ts-mode) ;; Ensure in Verilog mode
+             (eglot-managed-p)) ;; Check if Eglot is active
+    (let ((original-content (buffer-string)) ;; Save buffer content
+          (original-point (point)))          ;; Save cursor position
+      (eglot-format-buffer) ;; Apply formatting via LSP
+
+      ;; Ensure formatting was applied
+      (unless (string= original-content (buffer-string))
+        (message "Verilog formatter applied changes"))
+
+      (goto-char original-point)))) ;; Restore cursor position
+
+(defun my-setup-verilog-formatting ()
+  "Set up automatic formatting for Verilog."
+  (add-hook 'before-save-hook #'my-run-verilog-formatter nil t))
+
+;; Enable for Verilog modes
+(add-hook 'verilog-mode-hook 'my-setup-verilog-formatting)
+
+(add-hook 'verilog-ts-mode-hook #'bender-setup-verilog-eglot)

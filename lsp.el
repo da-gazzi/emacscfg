@@ -72,6 +72,26 @@
     :hook ((text-mode . company-mode)
            (prog-mode . company-mode)))
 
+(defun run-formatter-on-buffer (command args)
+  "Run a formatter COMMAND with ARGS on the current buffer content.
+The formatter is run in a temporary buffer, and the result is applied back to the current buffer
+only if no conflicts with unsaved changes are detected."
+  (let ((original-content (buffer-string)) ;; Save current content
+        (formatted-content nil))
+    ;; Run the formatter in a temporary buffer
+    (with-temp-buffer
+      (insert original-content)
+      (let ((exit-code (apply #'call-process-region (point-min) (point-max)
+                              command t t nil args)))
+        (if (zerop exit-code)
+            (setq formatted-content (buffer-string))
+          (message "Formatter %s failed with exit code %d" command exit-code))))
+    ;; Only apply changes if the content has not been modified
+    (when (and formatted-content
+               (string= original-content (buffer-string)))
+      (erase-buffer)
+      (insert formatted-content))))
+
 (load-user-file "lsp/verilog.el")
 (load-user-file "lsp/c.el")
 (load-user-file "lsp/python.el")
