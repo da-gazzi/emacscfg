@@ -92,32 +92,32 @@ Generate the file list if it doesn't exist or if `Bender.yml` or `Bender.lock` h
 This ensures the Verible language server gets the correct `--file_list_path`."
   (let ((file-list-path (bender-verilog-file-list-path)))
     (message "Setting up eglot for Verilog with file list path: %s" file-list-path)
-    (setq-local eglot-server-programs
-                `((verilog-ts-mode . ("verible-verilog-ls"
-                                      "--file_list_path"
-                                      ,(file-local-name file-list-path)
-                                      "--column_limit" (number-to-string verible-formatter-column-limit)
-                                      "--indentation_spaces" (number-to-string verible-formatter-indentation-spaces)
-                                      "--line_break_penalty" (number-to-string verible-formatter-line-break-penalty)
-                                      "--over_column_limit_penalty" (number-to-string verible-formatter-over-column-limit-penalty)
-                                      "--wrap_spaces" (number-to-string verible-formatter-wrap-spaces)
+    (add-to-list 'eglot-server-programs
+                 `(verilog-ts-mode .
+                   ("verible-verilog-ls"
+                    "--file_list_path" ,file-list-path
+                    "--column_limit" ,(number-to-string (or verible-formatter-column-limit 100))
+                    "--indentation_spaces" ,(number-to-string (or verible-formatter-indentation-spaces 2))
+                    "--line_break_penalty" ,(number-to-string (or verible-formatter-line-break-penalty 10))
+                    "--over_column_limit_penalty" ,(number-to-string (or verible-formatter-over-column-limit-penalty 20))
+                    "--wrap_spaces" ,(number-to-string (or verible-formatter-wrap-spaces 1))
 
-                                      "--assignment_statement_alignment"  verible-formatter-assignment_statement_alignment
-                                      "--case_items_alignment"  verible-formatter-case_items_alignment
-                                      "--class_member_variable_alignment"  verible-formatter-class_member_variable_alignment
-                                      "--distribution_items_alignment"  verible-formatter-distribution_items_alignment
-                                      "--enum_assignment_statement_alignment"  verible-formatter-enum_assignment_statement_alignment
-                                      "--formal_parameters_alignment"  verible-formatter-formal_parameters_alignment
-                                      "--formal_parameters_indentation"  verible-formatter-formal_parameters_indentation
-                                      "--module_net_variable_alignment"  verible-formatter-module_net_variable_alignment
-                                      "--named_parameter_alignment"  verible-formatter-named_parameter_alignment
-                                      "--named_parameter_indentation"  verible-formatter-named_parameter_indentation
-                                      "--named_port_alignment"  verible-formatter-named_port_alignment
-                                      "--named_port_indentation"  verible-formatter-named_port_indentation
-                                      "--port_declarations_alignment"  verible-formatter-port_declarations_alignment
-                                      "--port_declarations_indentation"  verible-formatter-port_declarations_indentation
-                                      "--struct_union_members_alignment"  verible-formatter-struct_union_members_alignment
-                                      ))))))
+                    "--assignment_statement_alignment"  ,(format "%s" (or verible-formatter-assignment_statement_alignment "flush_left"))
+                    "--case_items_alignment"  ,(format "%s" (or verible-formatter-case_items_alignment "flush_left"))
+                    "--class_member_variable_alignment"  ,(format "%s" (or verible-formatter-class_member_variable_alignment "flush_left"))
+                    "--distribution_items_alignment"  ,(format "%s" (or verible-formatter-distribution_items_alignment "flush_left"))
+                    "--enum_assignment_statement_alignment"  ,(format "%s" (or verible-formatter-enum_assignment_statement_alignment "flush_left"))
+                    "--formal_parameters_alignment"  ,(format "%s" (or verible-formatter-formal_parameters_alignment "flush_left"))
+                    "--formal_parameters_indentation"  ,(format "%s" (or verible-formatter-formal_parameters_indentation "flush_left"))
+                    "--module_net_variable_alignment"  ,(format "%s" (or verible-formatter-module_net_variable_alignment "flush_left"))
+                    "--named_parameter_alignment"  ,(format "%s" (or verible-formatter-named_parameter_alignment "flush_left"))
+                    "--named_parameter_indentation"  ,(format "%s" (or verible-formatter-named_parameter_indentation "flush_left"))
+                    "--named_port_alignment"  ,(format "%s" (or verible-formatter-named_port_alignment "flush_left"))
+                    "--named_port_indentation"  ,(format "%s" (or verible-formatter-named_port_indentation "flush_left"))
+                    "--port_declarations_alignment"  ,(format "%s" (or verible-formatter-port_declarations_alignment "flush_left"))
+                    "--port_declarations_indentation"  ,(format "%s" (or verible-formatter-port_declarations_indentation "flush_left"))
+                    "--struct_union_members_alignment"  ,(format "%s" (or verible-formatter-struct_union_members_alignment "flush_left"))
+                    )))))
 
 (defun my-run-verilog-formatter ()
   "Run `eglot-format-buffer` on the current buffer safely."
@@ -140,4 +140,4 @@ This ensures the Verible language server gets the correct `--file_list_path`."
 ;; Enable for Verilog modes
 (add-hook 'verilog-mode-hook 'my-setup-verilog-formatting)
 
-(add-hook 'verilog-ts-mode-hook #'bender-setup-verilog-eglot)
+(add-hook 'verilog-mode-hook #'bender-setup-verilog-eglot)
