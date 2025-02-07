@@ -2,6 +2,8 @@
 
 ;;; VERILOG
 
+(require 'eglot)
+
 (straight-use-package 'use-package)
 (use-package verilog-mode
   :straight (:repo "veripool/verilog-mode"))
@@ -93,7 +95,7 @@ This ensures the Verible language server gets the correct `--file_list_path`."
   (let ((file-list-path (bender-verilog-file-list-path)))
     (message "Setting up eglot for Verilog with file list path: %s" file-list-path)
     (add-to-list 'eglot-server-programs
-                 `(verilog-ts-mode .
+                 `(verilog-mode .
                    ("verible-verilog-ls"
                     "--file_list_path" ,file-list-path
                     "--column_limit" ,(number-to-string (or verible-formatter-column-limit 100))
