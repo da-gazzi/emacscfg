@@ -95,6 +95,11 @@
 (setq-default fill-column 100)
 
 (require 'tramp)
+(customize-set-variable 'tramp-default-remote-shell "/bin/bash")
+(add-to-list 'tramp-connection-properties
+             (list (regexp-quote "/ssh:moritz@mosaic-soc.ch:")
+                   "remote-shell" "/bin/bash"))
+
 (setq remote-file-name-inhibit-locks t)
 
 ;; Needs to be called from recentf's :init

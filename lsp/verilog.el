@@ -57,19 +57,48 @@ Otherwise, use the output of `git rev-parse --show-toplevel`."
             (user-error "No Git repository found for the current buffer")
           git-top-level)))))
 
+;; (defun bender-generate-file-list (file-path)
+;;   "Generate the file list at FILE-PATH using a shell command.
+;; The file is created in the top-level project directory containing FILE-PATH."
+;;   (let ((directory (file-name-directory file-path)))
+;;     (message "Generating file list in directory: %s" directory)
+;;     (let ((exit-code
+;;            (call-process-shell-command
+;;             (format "cd %s && bender script flist > %s"
+;;                     (shell-quote-argument directory)
+;;                     (shell-quote-argument file-path)))))
+;;       (if (zerop exit-code)
+;;           (message "File list generated successfully: %s" file-path)
+;;         (message "Error generating file list with exit code: %d" exit-code)))))
+
 (defun bender-generate-file-list (file-path)
   "Generate the file list at FILE-PATH using a shell command.
-The file is created in the top-level project directory containing FILE-PATH."
+The file is created in the top-level project directory containing FILE-PATH.
+Handles remote TRAMP paths by executing the command remotely."
   (let ((directory (file-name-directory file-path)))
     (message "Generating file list in directory: %s" directory)
-    (let ((exit-code
-           (call-process-shell-command
-            (format "cd %s && bender script flist > %s"
-                    (shell-quote-argument directory)
-                    (shell-quote-argument file-path)))))
-      (if (zerop exit-code)
-          (message "File list generated successfully: %s" file-path)
-        (message "Error generating file list with exit code: %d" exit-code)))))
+    (if (file-remote-p directory)
+        (let* ((vec (tramp-dissect-file-name directory))
+               (local-dir (tramp-file-name-localname vec))
+               (remote-cmd (format "bash -c 'cd %s && ~/.cargo/bin/bender script flist > %s'"
+                                   (shell-quote-argument local-dir)
+                                   (shell-quote-argument (file-local-name file-path)))))
+          (message "Executing remote command: %s" remote-cmd)
+          (let ((output (with-temp-buffer
+                          (tramp-handle-shell-command remote-cmd nil (current-buffer))
+                          (buffer-string))))
+            (if (string-match-p "error\\|failed" output)
+                (message "Error generating file list: %s" output)
+              (message "File list generated successfully: %s" output))))
+      ;; Local execution
+      (let ((exit-code
+             (call-process-shell-command
+              (format "cd %s && bender script flist > %s"
+                      (shell-quote-argument directory)
+                      (shell-quote-argument file-path)))))
+        (if (zerop exit-code)
+            (message "File list generated successfully: %s" file-path)
+          (message "Error generating file list with exit code: %d" exit-code))))))
 
 (defun bender-verilog-file-list-path ()
   "Get the path to the Verilog file list in the top-level project directory.
@@ -90,14 +119,31 @@ Generate the file list if it doesn't exist or if `Bender.yml` or `Bender.lock` h
     file-path))
 
 (defun bender-setup-verilog-eglot ()
-  "Setup `eglot` for Verilog mode dynamically.
-This ensures the Verible language server gets the correct `--file_list_path`."
-  (let ((file-list-path (bender-verilog-file-list-path)))
+  "Setup `eglot` for Verilog mode dynamically."
+(let* ((file-list-path (bender-verilog-file-list-path))
+         (is-remote (file-remote-p default-directory))
+         (remote-prefix (when is-remote (file-remote-p default-directory 'method-user-host)))
+         (local-file-list-path (if is-remote
+                                   (tramp-file-name-localname (tramp-dissect-file-name file-list-path))
+                                 file-list-path))
+         (server-command (if is-remote
+                             ;; Run the language server remotely
+                             `(,remote-prefix "verible-verilog-ls")
+                           ;; Run locally
+                           "verible-verilog-ls")))
+    ;; Debug messages
+    (message "[DEBUG] bender-setup-verilog-eglot: Setting up Eglot for Verilog")
+    (message "[DEBUG] bender-setup-verilog-eglot: File list path: %s" file-list-path)
+    (message "[DEBUG] bender-setup-verilog-eglot: Remote editing detected? %s" (if is-remote "YES" "NO"))
+    (when is-remote
+      (message "[DEBUG] bender-setup-verilog-eglot: TRAMP remote prefix: %s" remote-prefix))
+    (message "[DEBUG] bender-setup-verilog-eglot: Server command: %s" (format "%s" server-command))
+
     (message "Setting up eglot for Verilog with file list path: %s" file-list-path)
     (add-to-list 'eglot-server-programs
                  `(verilog-mode .
                    ("verible-verilog-ls"
-                    "--file_list_path" ,file-list-path
+                    "--file_list_path" , local-file-list-path
                     "--column_limit" ,(number-to-string (or verible-formatter-column-limit 100))
                     "--indentation_spaces" ,(number-to-string (or verible-formatter-indentation-spaces 2))
                     "--line_break_penalty" ,(number-to-string (or verible-formatter-line-break-penalty 10))
@@ -141,5 +187,4 @@ This ensures the Verible language server gets the correct `--file_list_path`."
 
 ;; Enable for Verilog modes
 (add-hook 'verilog-mode-hook 'my-setup-verilog-formatting)
-
 (add-hook 'verilog-mode-hook #'bender-setup-verilog-eglot)
