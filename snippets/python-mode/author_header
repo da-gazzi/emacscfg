@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: author_header
+# key: author_header
+# --
+# ----------------------------------------------------------------------
+#
+# File: `(file-name-nondirectory (buffer-file-name))`$0
+#
+# Created: `(format-time-string "%d.%m.%Y")`$0
+#
+# Copyright (C) `(format-time-string "%Y")`$0, Mosaic SoC. All rights reserved.
