@@ -57,20 +57,6 @@ Otherwise, use the output of `git rev-parse --show-toplevel`."
             (user-error "No Git repository found for the current buffer")
           git-top-level)))))
 
-;; (defun bender-generate-file-list (file-path)
-;;   "Generate the file list at FILE-PATH using a shell command.
-;; The file is created in the top-level project directory containing FILE-PATH."
-;;   (let ((directory (file-name-directory file-path)))
-;;     (message "Generating file list in directory: %s" directory)
-;;     (let ((exit-code
-;;            (call-process-shell-command
-;;             (format "cd %s && bender script flist > %s"
-;;                     (shell-quote-argument directory)
-;;                     (shell-quote-argument file-path)))))
-;;       (if (zerop exit-code)
-;;           (message "File list generated successfully: %s" file-path)
-;;         (message "Error generating file list with exit code: %d" exit-code)))))
-
 (defun bender-generate-file-list (file-path)
   "Generate the file list at FILE-PATH using a shell command.
 The file is created in the top-level project directory containing FILE-PATH.

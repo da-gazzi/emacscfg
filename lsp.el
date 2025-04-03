@@ -21,6 +21,7 @@
          (verilog-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
          (c-mode . eglot-ensure)
+         (cmake-mode . eglot-ensure)
          )
   :bind (:map eglot-mode-map
          ("C-c q" . #'xref-find-definitions)
@@ -94,4 +95,5 @@ only if no conflicts with unsaved changes are detected."
 
 (load-user-file "lsp/verilog.el")
 (load-user-file "lsp/c.el")
+(load-user-file "lsp/cmake.el")
 (load-user-file "lsp/python.el")

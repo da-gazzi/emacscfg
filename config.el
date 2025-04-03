@@ -129,3 +129,4 @@
 
 (add-to-list 'auto-mode-alist '("\\.hjson\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
+(add-to-list 'auto-mode-alist '("\\.sdc\\'" . tcl-mode))
