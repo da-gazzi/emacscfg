@@ -41,6 +41,9 @@
 
 (use-package magit)
 
+(straight-use-package 'helm)
+(helm-mode 1)
+
 (use-package markdown-mode
   :hook (gfm-mode . visual-line-mode)
   :bind (:map markdown-mode-map ("C-c C-s a" . markdown-table-align))

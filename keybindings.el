@@ -33,3 +33,9 @@
 
 (global-set-key (kbd "C-<tab>") 'completion-at-point)
 (global-set-key (kbd "s-u") 'revert-buffer)
+
+;; Helm bindings
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x C-b") 'helm-buffers-list)
+(global-set-key (kbd "C-x b") 'helm-buffers-list)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
