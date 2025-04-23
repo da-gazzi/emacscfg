@@ -31,11 +31,11 @@
 (setq verible-formatter-port_declarations_indentation "indent")
 (setq verible-formatter-struct_union_members_alignment "align")
 
-(use-package verilog-ts-mode)
-(add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
-(unless (treesit-language-available-p 'verilog)
-  (verilog-ts-install-grammar)
-  )
+ (use-package verilog-ts-mode)
+(add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-mode))
+ (unless (treesit-language-available-p 'verilog)
+   (verilog-ts-install-grammar)
+   )
 
 (defun bender-get-top-level-project-root ()
   "Determine the top-level project root for the current buffer.

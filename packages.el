@@ -43,11 +43,18 @@
 
 (straight-use-package 'helm)
 (helm-mode 1)
+(setq helm-move-to-line-cycle-in-source nil)
+
+(use-package helm-file-preview
+  :ensure t
+  :config (helm-file-preview-mode 1))
 
 (use-package markdown-mode
+  :ensure t
   :hook (gfm-mode . visual-line-mode)
   :bind (:map markdown-mode-map ("C-c C-s a" . markdown-table-align))
   :mode ("\\.md$" . gfm-mode))
+
 
 (use-package apheleia
   :custom (apheleia-remote-algorithm 'local)
@@ -65,3 +72,15 @@
   (load-theme 'dracula t))
 
 (add-hook 'after-init-hook 'dracula)
+
+(use-package helm-ag
+  :ensure t)
+(setq helm-ag-use-fuzzy-match t)
+(use-package helm-swoop
+  :ensure t)
+
+(setq helm-swoop-split-direction 'split-window-vertically)
+(setq helm-swoop-split-with-multiple-windows t)
+(setq helm-swoop-use-line-number-face t)
+(setq helm-swoop-use-fuzzy-match t)
+(setq helm-multi-swoop-edit-save t)
