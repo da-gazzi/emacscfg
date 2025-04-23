@@ -6,10 +6,10 @@
 ;;; Code:
 
 
-(when (window-system)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (tooltip-mode -1))
+;(when (window-system)
+;  (tool-bar-mode -1)
+;  (scroll-bar-mode -1)
+;  (tooltip-mode -1))
 
 (require 'package)
 ;; Workaround the TLS problems with ELPA in older versions
