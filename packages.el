@@ -5,7 +5,23 @@
  (use-package tree-sitter
     :config (global-tree-sitter-mode))
 
-  (use-package tree-sitter-langs)
+(use-package tree-sitter-langs)
+(use-package treesit-auto
+  :ensure t
+  :config (global-treesit-auto-mode))
+(add-to-list 'tree-sitter-major-mode-language-alist
+             '(verilog-ts-mode . verilog))
+(add-to-list 'tree-sitter-major-mode-language-alist
+             '(c++-ts-mode . cpp))
+(add-to-list 'tree-sitter-major-mode-language-alist
+             '(c-ts-mode . c))
+
+(use-package msgu
+  :straight (msgu :type git :host github :repo "jcs-elpa/msgu"))
+(require 'msgu)
+(use-package ts-docstr
+  :straight (ts-docstr :type git :host github :repo "emacs-vs/ts-docstr"
+                       :files (:defaults "langs/*.el")))
 
 (let ((installed (package-installed-p 'all-the-icons)))
   (use-package all-the-icons)
@@ -79,8 +95,18 @@
 (use-package helm-swoop
   :ensure t)
 
+(use-package verilog-ext
+  :ensure t)
+
 (setq helm-swoop-split-direction 'split-window-vertically)
 (setq helm-swoop-split-with-multiple-windows t)
 (setq helm-swoop-use-line-number-face t)
 (setq helm-swoop-use-fuzzy-match t)
 (setq helm-multi-swoop-edit-save t)
+(setq helm-ff-file-name-history-use-recentf t)
+
+
+;; jump to words/char/etc
+(use-package avy
+  :ensure t)
+(avy-setup-default)

@@ -8,6 +8,10 @@
 (use-package verilog-mode
   :straight (:repo "veripool/verilog-mode"))
 (use-package verilog-ts-mode)
+;; indentation level: 2
+(setq verilog-indent-level 2)
+(setq verilog-indent-level-module 2)
+(setq verilog-indent-level-declaration 2)
 
 (setq verible-formatter-indentation-spaces 2)
 (setq verible-formatter-wrap-spaces 4)
@@ -32,7 +36,7 @@
 (setq verible-formatter-struct_union_members_alignment "align")
 
  (use-package verilog-ts-mode)
-(add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-mode))
+(add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
  (unless (treesit-language-available-p 'verilog)
    (verilog-ts-install-grammar)
    )
@@ -136,21 +140,21 @@ Generate the file list if it doesn't exist or if `Bender.yml` or `Bender.lock` h
                     "--over_column_limit_penalty" ,(number-to-string (or verible-formatter-over-column-limit-penalty 20))
                     "--wrap_spaces" ,(number-to-string (or verible-formatter-wrap-spaces 1))
 
-                    "--assignment_statement_alignment"  ,(format "%s" (or verible-formatter-assignment_statement_alignment "flush_left"))
-                    "--case_items_alignment"  ,(format "%s" (or verible-formatter-case_items_alignment "flush_left"))
-                    "--class_member_variable_alignment"  ,(format "%s" (or verible-formatter-class_member_variable_alignment "flush_left"))
-                    "--distribution_items_alignment"  ,(format "%s" (or verible-formatter-distribution_items_alignment "flush_left"))
-                    "--enum_assignment_statement_alignment"  ,(format "%s" (or verible-formatter-enum_assignment_statement_alignment "flush_left"))
-                    "--formal_parameters_alignment"  ,(format "%s" (or verible-formatter-formal_parameters_alignment "flush_left"))
-                    "--formal_parameters_indentation"  ,(format "%s" (or verible-formatter-formal_parameters_indentation "flush_left"))
-                    "--module_net_variable_alignment"  ,(format "%s" (or verible-formatter-module_net_variable_alignment "flush_left"))
-                    "--named_parameter_alignment"  ,(format "%s" (or verible-formatter-named_parameter_alignment "flush_left"))
-                    "--named_parameter_indentation"  ,(format "%s" (or verible-formatter-named_parameter_indentation "flush_left"))
-                    "--named_port_alignment"  ,(format "%s" (or verible-formatter-named_port_alignment "flush_left"))
-                    "--named_port_indentation"  ,(format "%s" (or verible-formatter-named_port_indentation "flush_left"))
-                    "--port_declarations_alignment"  ,(format "%s" (or verible-formatter-port_declarations_alignment "flush_left"))
-                    "--port_declarations_indentation"  ,(format "%s" (or verible-formatter-port_declarations_indentation "flush_left"))
-                    "--struct_union_members_alignment"  ,(format "%s" (or verible-formatter-struct_union_members_alignment "flush_left"))
+                    "--assignment_statement_alignment"  ,(format "%s" (or verible-formatter-assignment_statement_alignment "flush-left"))
+                    "--case_items_alignment"  ,(format "%s" (or verible-formatter-case_items_alignment "flush-left"))
+                    "--class_member_variable_alignment"  ,(format "%s" (or verible-formatter-class_member_variable_alignment "flush-left"))
+                    "--distribution_items_alignment"  ,(format "%s" (or verible-formatter-distribution_items_alignment "flush-left"))
+                    "--enum_assignment_statement_alignment"  ,(format "%s" (or verible-formatter-enum_assignment_statement_alignment "flush-left"))
+                    "--formal_parameters_alignment"  ,(format "%s" (or verible-formatter-formal_parameters_alignment "flush-left"))
+                    "--formal_parameters_indentation"  ,(format "%s" (or verible-formatter-formal_parameters_indentation "flush-left"))
+                    "--module_net_variable_alignment"  ,(format "%s" (or verible-formatter-module_net_variable_alignment "flush-left"))
+                    "--named_parameter_alignment"  ,(format "%s" (or verible-formatter-named_parameter_alignment "flush-left"))
+                    "--named_parameter_indentation"  ,(format "%s" (or verible-formatter-named_parameter_indentation "flush-left"))
+                    "--named_port_alignment"  ,(format "%s" (or verible-formatter-named_port_alignment "flush-left"))
+                    "--named_port_indentation"  ,(format "%s" (or verible-formatter-named_port_indentation "indent"))
+                    "--port_declarations_alignment"  ,(format "%s" (or verible-formatter-port_declarations_alignment "flush-left"))
+                    "--port_declarations_indentation"  ,(format "%s" (or verible-formatter-port_declarations_indentation "flush-left"))
+                    "--struct_union_members_alignment"  ,(format "%s" (or verible-formatter-struct_union_members_alignment "flush-left"))
                     )))))
 
 (defun my-run-verilog-formatter ()
@@ -172,5 +176,5 @@ Generate the file list if it doesn't exist or if `Bender.yml` or `Bender.lock` h
   (add-hook 'before-save-hook #'my-run-verilog-formatter nil t))
 
 ;; Enable for Verilog modes
-(add-hook 'verilog-mode-hook 'my-setup-verilog-formatting)
+;(add-hook 'verilog-mode-hook 'my-setup-verilog-formatting)
 (add-hook 'verilog-mode-hook #'bender-setup-verilog-eglot)

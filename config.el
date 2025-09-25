@@ -130,3 +130,9 @@
 (add-to-list 'auto-mode-alist '("\\.hjson\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.sdc\\'" . tcl-mode))
+
+;; Org mode stuff
+(setq org-startup-indented t)
+
+;; have dired use another open dired buffer as default target directory
+(setq dired-dwim-target t)

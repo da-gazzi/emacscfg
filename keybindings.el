@@ -111,6 +111,15 @@
 (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
 (global-set-key (kbd "C-c M-i") 'helm-multi-swoop)
 (global-set-key (kbd "C-x M-i") 'helm-multi-swoop-all)
+;; quick toggle fuzzy matching with M-s
+(defun my/toggle-var (var)
+  (message "variable %s's value was %s" var (symbol-value var))
+  (set var (not (symbol-value var)))
+  (message "variable %s's value changed to %s" var (symbol-value var))  )
+(defun my/toggle-swoop-fuzzy ()
+  (interactive)
+    (my/toggle-var 'helm-swoop-use-fuzzy-match))
+(define-key helm-swoop-map (kbd "M-s s") 'my/toggle-swoop-fuzzy)
 
 ;; When doing isearch, hand the word over to helm-swoop
 ;; lol we don't use isearch
@@ -125,6 +134,9 @@
 (define-key undo-tree-map (kbd "C-x U") 'undo-tree-redo)
 (define-key undo-tree-map (kbd "C-x M-u") 'undo-tree-visualize)
 
+;; dired
+(define-key dired-mode-map (kbd "C-l") 'dired-up-directory)
+
 ;; Verilog-mode - disable the ultra annoying semicolon
 (define-key verilog-mode-map (kbd ";") nil)
 
@@ -133,3 +145,13 @@
 (defadvice delete-window (after rebalance-windows activate)
   (balance-windows))
 ;(ad-activate 'split-window-horizontally)
+;; avy
+(with-eval-after-load 'verilog-ts-mode
+  (define-key verilog-ts-mode-map (kbd "C-;") nil))
+(global-set-key (kbd "C-;") 'avy-goto-char-2)
+(global-set-key (kbd "C-c C-j") 'avy-resume)
+(global-set-key (kbd "C-'") 'avy-goto-word-1)
+
+;; scrolling
+(global-set-key (kbd "M-v") #'my-scroll-up-custom)
+(global-set-key (kbd "C-v") #'my-scroll-down-custom)
