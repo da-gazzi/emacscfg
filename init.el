@@ -27,6 +27,7 @@
 (add-to-list 'package-archives '("ublt" . "https://elpa.ubolonton.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t) ; Org-mode's repository
 (add-to-list 'package-archives '( "jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/") t)
+(package-initialize)
 
 (setq package-native-compile t)
 (setq use-package-always-ensure t)
@@ -109,19 +110,22 @@ Should be a float between 0.1 and 1.0."
         (forward-line -1))
       (line-number-at-pos))))
 
-
 (defun my--scroll-lines (down move)
-  "Compute number of lines to scroll based on window height and factor. DOWN specifies if we're scrolling down. MOVE specifies if the calculation is for moving the pointer or for scrolling."
+  "Compute number of lines to scroll..."
   (let* ((orig-lines (max 1 (truncate (* my-scroll-window-factor (window-body-height)))))
-         (buf-lines (+ (count-lines (point-min) (point-max)) 1)) ;; point can be one line below the last actually "populated" line
+         ;; true last line number; no +1 fudge
+         (buf-lines (save-excursion (goto-char (point-max)) (line-number-at-pos)))
          (overscroll-lines (- (truncate (* my-overscroll-window-factor (window-body-height))))))
-    (if  move
+    (if move
         (if down
             (min (- buf-lines (line-number-at-pos)) orig-lines)
-          (min (- (line-number-at-pos) 1 ) orig-lines))
-      (if down ;; TODO broken!!
-          (max overscroll-lines (min (- buf-lines (last-fully-visible-line)) orig-lines))
-        (min (- (line-number-at-pos) 1 ) orig-lines)))))
+          (min (- (line-number-at-pos) 1) orig-lines))
+      (if down
+          ;; clamp the “how many lines remain below” at 0 to be extra safe
+          (max overscroll-lines
+               (min (max 0 (- buf-lines (last-fully-visible-line))) orig-lines))
+        (min (- (line-number-at-pos) 1) orig-lines)))))
+
 
 (defun my-scroll-down-custom ()
   "Scroll window down by a fraction of its height, move point accordingly."
@@ -131,7 +135,7 @@ Should be a float between 0.1 and 1.0."
          (orig-line (line-number-at-pos))
          (scroll-fn (if (bound-and-true-p pixel-scroll-precision-mode)
          #'(lambda (l) (pixel-scroll-precision-interpolate  (* (pixel-line-height (point)) (- l))))
-         #'scroll-down)))
+         #'scroll-up)))
 ;    (message "calling scroll-fn with %d lines" scroll-lines)
     (unwind-protect
         (when (not (equal scroll-lines 0))

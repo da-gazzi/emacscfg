@@ -93,7 +93,9 @@
   :ensure t)
 (setq helm-ag-use-fuzzy-match t)
 (use-package helm-swoop
-  :ensure t)
+  :straight (:host github :repo "emacsattic/helm-swoop"))
+
+
 
 (use-package verilog-ext
   :ensure t)
