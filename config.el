@@ -2,7 +2,7 @@
 
 ;;; General purpose configuration
 
-(set-frame-font "monospace 13" nil t)
+(set-frame-font "DejaVu Sans Mono 13" nil t)
 
 (setq gc-cons-threshold 100000000)
 (setq max-specpdl-size 5000)
