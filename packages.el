@@ -89,8 +89,10 @@
 
 (add-hook 'after-init-hook 'dracula)
 
+
 (use-package helm-ag
-  :ensure t)
+  :straight (:host github :repo "emacsattic/helm-ag"))
+
 (setq helm-ag-use-fuzzy-match t)
 (use-package helm-swoop
   :straight (:host github :repo "emacsattic/helm-swoop"))

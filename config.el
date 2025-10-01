@@ -136,3 +136,16 @@
 
 ;; have dired use another open dired buffer as default target directory
 (setq dired-dwim-target t)
+
+;; automatically switch to XREF buffer after it opens
+(defun my-xref-show-xref-buffer (fetcher alist)
+  (let ((buf (xref--show-xref-buffer fetcher alist)))
+    (select-window (get-buffer-window buf))
+    buf))
+
+(setq xref-show-xrefs-function #'my-xref-show-xref-buffer)
+
+
+(defun google-access-label-indent (langelem)
+  "Indent access specifiers (`public:` etc.) by exactly 1 space."
+  1)
