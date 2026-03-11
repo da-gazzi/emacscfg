@@ -10,6 +10,8 @@
 (scroll-bar-mode -1)
 (tooltip-mode -1)
 (menu-bar-mode -1)
+;; save sessions
+(desktop-save-mode 1)
 
 (require 'package)
 ;; Workaround the TLS problems with ELPA in older versions
@@ -62,6 +64,13 @@
 (load-user-file "lsp.el")
 (load-user-file "keybindings.el")
 (load-user-file "gpt.el")
+(load-user-file "google-c-style.el")
+
+;; stop emacs from warning about overriding projectile-root-functions
+(put 'projectile-project-root-functions 'safe-local-variable
+     (lambda (v)
+       (and (listp v)
+            (cl-every #'symbolp v))))
 
 (defun my/set-frame-params (frame)
   (modify-frame-parameters frame
@@ -69,7 +78,7 @@
                              (horizontal-scroll-bars . nil)
                              (menu-bar-lines . 0)
                              (tool-bar-lines . 0)
-                             (font . "monospace 13"))))
+                             (font . "DejaVu Sans Mono 14"))))
 (add-hook 'after-make-frame-functions 'my/set-frame-params)
 
 
@@ -173,3 +182,35 @@ Should be a float between 0.1 and 1.0."
   (cl-loop for dir in '(".git" ".git/" ".hg/" ".svn/")
            when (locate-dominating-file default-directory dir)
            return it)))
+(put 'downcase-region 'disabled nil)
+
+;; Fix compatibility of (e.g.) dired-do-rename and helm
+(defun my-helm-mode--default-filename (orig-fun default dir &optional must-match)
+  ;; Emacs 30+ sometimes passes a list (DIR DEFAULT-FILE).
+  (if  (listp default)
+      (if (and
+             ;; very defensive, in case Helm starts using lists itself later
+             (= (length default) 2)
+             (stringp (cadr default)))
+          (setq default (cadr default))
+    (if (and (= (length default) 1)
+             (stringp (car default)))
+        (setq default (car default)))))
+  (funcall orig-fun default dir must-match))
+
+(with-eval-after-load 'helm-mode
+  (advice-add 'helm-mode--default-filename
+              :around #'my-helm-mode--default-filename))
+
+
+;; helper to describe face at point
+(defun describe-face-at-point (face)
+  "Describe the typeface properties of FACE."
+
+  (interactive
+   (list
+    (let* ((fap (face-at-point))
+           (cseq (append (when fap (list fap)) '("mode-line-inactive" "mode-line")) ))
+      (completing-read "Face: " cseq nil t))))
+
+  (describe-face face))

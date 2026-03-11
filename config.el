@@ -2,7 +2,9 @@
 
 ;;; General purpose configuration
 
-(set-frame-font "DejaVu Sans Mono 13" nil t)
+(set-frame-font "DejaVu Sans Mono 14" nil t)
+(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-14"))
+
 
 (setq gc-cons-threshold 100000000)
 (setq max-specpdl-size 5000)
@@ -149,3 +151,33 @@
 (defun google-access-label-indent (langelem)
   "Indent access specifiers (`public:` etc.) by exactly 1 space."
   1)
+
+; point treesit to where we keep the tree-sitter-langs manually compiled
+(setq treesit-extra-load-path '( "~/.emacs.d/tree-sitter/" "~/projects/tree-sitter-langs/bin/"))
+                                        ; make it use systemverilog.so/dylib
+
+; (setq treesit-load-name-override-list '((verilog "libtree-sitter-verilog" "tree_sitter_systemverilog")))
+                                        ;(setq treesit-load-name-override-list '())
+
+;; kill a hung buffer (happens with tramp)
+(defun force-kill-remote-buffer ()
+  "Forcefully kill current buffer even if its remote host is down."
+  (interactive)
+  (let* ((buf (current-buffer))
+         (dir default-directory))
+    ;; Kill any obvious TRAMP processes for this host (best-effort).
+    (ignore-errors
+      (when (and (stringp dir) (file-remote-p dir))
+        (let* ((vec (tramp-dissect-file-name dir))
+               (host (tramp-file-name-host vec)))
+          (dolist (p (process-list))
+            (when (and (process-live-p p)
+                       (string-match-p (format "tramp.*%s" (regexp-quote host))
+                                       (process-name p)))
+              (delete-process p))))))
+    ;; Make everything local and unhooked, then kill.
+    (setq default-directory (expand-file-name "~"))
+    (setq-local vc-handled-backends nil)
+    (ignore-errors (set-visited-file-name nil t t))
+    (let ((kill-buffer-query-functions nil))
+      (kill-buffer buf))))

@@ -104,6 +104,8 @@
   (define-key helm-find-files-map (kbd "<tab>") #'my/helm-ff-smart-tab))
 ;; END CHATGPT SLOP
 
+(define-key custom-mode-map (kbd "C-l") `Custom-buffer-done)
+
 (global-set-key (kbd "M-s s") 'helm-do-ag-project-root)
 ;; replace ordinary isearch with swoop
 (global-set-key (kbd "C-s") 'helm-swoop-without-pre-input)
@@ -155,3 +157,34 @@
 ;; scrolling
 (global-set-key (kbd "M-v") #'my-scroll-up-custom)
 (global-set-key (kbd "C-v") #'my-scroll-down-custom)
+
+(defun my/switch-window-multiframe-kbd ()
+  (interactive)
+  (let ((old-multiframe-val (symbol-value switch-window-multiple-frames)))
+    (setq switch-window-multiple-frames t)
+    (command-execute 'switch-window)
+    (setq switch-window-multiple-frames old-multiframe-val)))
+;; switch-window
+(require 'switch-window)
+(global-set-key (kbd "C-x O") 'switch-window)
+(global-set-key (kbd "C-x M-o") 'my/switch-window-multiframe-kbd)
+;;(global-set-key (kbd "C-x 1") 'switch-window-then-maximize)
+;;(global-set-key (kbd "C-x 2") 'switch-window-then-split-below)
+;;(global-set-key (kbd "C-x 3") 'switch-window-then-split-right)
+;;(global-set-key (kbd "C-x 0") 'switch-window-then-delete)
+
+(global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
+(global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
+(global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
+(global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
+
+(global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
+(global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
+
+(global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
+
+;; force kill buffer with C-x K
+(global-set-key (kbd "C-x K") 'force-kill-remote-buffer)
+
+
+(global-set-key (kbd "C-M-m") 'livedown-preview)

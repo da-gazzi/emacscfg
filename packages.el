@@ -2,19 +2,35 @@
 
 (use-package yaml-mode)
 
- (use-package tree-sitter
-    :config (global-tree-sitter-mode))
-
-(use-package tree-sitter-langs)
+;(use-package tree-sitter
+;    :config (global-tree-sitter-mode))
+;
+                                        ;(use-package tree-sitter-langs)
+(require 'treesit)
 (use-package treesit-auto
   :ensure t
   :config (global-treesit-auto-mode))
-(add-to-list 'tree-sitter-major-mode-language-alist
-             '(verilog-ts-mode . verilog))
-(add-to-list 'tree-sitter-major-mode-language-alist
-             '(c++-ts-mode . cpp))
-(add-to-list 'tree-sitter-major-mode-language-alist
-             '(c-ts-mode . c))
+;(add-to-list 'tree-sitter-major-mode-language-alist
+;             '(verilog-ts-mode . systemverilog))
+;(add-to-list 'tree-sitter-major-mode-language-alist
+;             '(c++-ts-mode . cpp))
+;(add-to-list 'tree-sitter-major-mode-language-alist
+;             '(c-ts-mode . c))
+
+
+;; install Projectile for reasonable project management
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("s-p" . projectile-command-map)
+              ("C-c p" . projectile-command-map)))
+
+(use-package switch-window)
+
+(use-package pyvenv)
+(setenv "WORKON_HOME" "~/miniconda3/envs/")
 
 (use-package msgu
   :straight (msgu :type git :host github :repo "jcs-elpa/msgu"))
@@ -71,6 +87,8 @@
   :bind (:map markdown-mode-map ("C-c C-s a" . markdown-table-align))
   :mode ("\\.md$" . gfm-mode))
 
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/emacs-livedown"))
+(require 'livedown)
 
 (use-package apheleia
   :custom (apheleia-remote-algorithm 'local)
@@ -86,6 +104,7 @@
 (defun dracula()
   (interactive)
   (load-theme 'dracula t))
+
 
 (add-hook 'after-init-hook 'dracula)
 

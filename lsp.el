@@ -21,6 +21,7 @@
          (verilog-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
          (c-mode . eglot-ensure)
+         (c++-ts-mode . eglot-ensure)
          (cmake-mode . eglot-ensure)
          )
   :bind (:map eglot-mode-map
@@ -35,7 +36,7 @@
   (eglot-send-changes-idle-time 0.1)
   )
 
-(fset #'jsonrpc--log-event #'ignore)
+;(fset #'jsonrpc--log-event #'ignore)
 
 (use-package flymake
   :config
