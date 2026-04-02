@@ -22,6 +22,29 @@
 (unless '(version> emacs-version "29.0")
   (package-install 'gnu-elpa-keyring-update))
 
+(defun my/setup-font (frame)
+  (when (display-graphic-p frame)
+    (with-selected-frame frame
+      (set-face-attribute 'default frame
+                          :family "DejaVu Sans Mono"
+                          :height 110
+                          :weight 'medium))))
+
+(when (display-graphic-p)
+  (my/setup-font (selected-frame)))
+
+(add-hook 'after-make-frame-functions #'my/setup-font)
+;(defun my/set-frame-params (frame)
+;  (modify-frame-parameters frame
+;                           '((vertical-scroll-bars . nil)
+;                             (horizontal-scroll-bars . nil)
+;                             (menu-bar-lines . 0)
+;                             (tool-bar-lines . 0)
+;                             (font . "DejaVu Sans Mono 11"))))
+;(add-hook 'after-make-frame-functions 'my/set-frame-params)
+;
+;(set-frame-font "DejaVu Sans Mono 11")
+;(add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono 11"))
 
 (setq package-install-upgrade-built-in t)
 
@@ -71,15 +94,6 @@
      (lambda (v)
        (and (listp v)
             (cl-every #'symbolp v))))
-
-(defun my/set-frame-params (frame)
-  (modify-frame-parameters frame
-                           '((vertical-scroll-bars . nil)
-                             (horizontal-scroll-bars . nil)
-                             (menu-bar-lines . 0)
-                             (tool-bar-lines . 0)
-                             (font . "DejaVu Sans Mono 14"))))
-(add-hook 'after-make-frame-functions 'my/set-frame-params)
 
 
 (provide 'init)
