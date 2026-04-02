@@ -122,68 +122,117 @@ Should be a float between 0.1 and 1.0."
   :type 'float
   :group 'convenience)
 
-(defun last-fully-visible-line ()
-  "Return the line number of the last fully visible line in the current window."
-  (save-excursion
-    (let ((start (window-start))
-          (end (window-end nil t)))
-      (goto-char end)
-      ;; Check if current line is fully visible
-      (when (not (pos-visible-in-window-p (line-beginning-position) nil t))
-        (forward-line -1))
-      (line-number-at-pos))))
+(defvar-local my--overscroll-down-count 0)
+(defvar-local my--overscroll-up-count 0)
 
-(defun my--scroll-lines (down move)
-  "Compute number of lines to scroll..."
-  (let* ((orig-lines (max 1 (truncate (* my-scroll-window-factor (window-body-height)))))
-         ;; true last line number; no +1 fudge
-         (buf-lines (save-excursion (goto-char (point-max)) (line-number-at-pos)))
-         (overscroll-lines (- (truncate (* my-overscroll-window-factor (window-body-height))))))
-    (if move
-        (if down
-            (min (- buf-lines (line-number-at-pos)) orig-lines)
-          (min (- (line-number-at-pos) 1) orig-lines))
-      (if down
-          ;; clamp the “how many lines remain below” at 0 to be extra safe
-          (max overscroll-lines
-               (min (max 0 (- buf-lines (last-fully-visible-line))) orig-lines))
-        (min (- (line-number-at-pos) 1) orig-lines)))))
+(defun my--scroll-step-lines ()
+  "Return the normal scroll step in screen lines."
+  (max 1
+       (truncate (* my-scroll-window-factor
+                    (window-text-height nil t)))))
 
+(defun my--overscroll-limit ()
+  "Return the overscroll limit in screen lines."
+  (max 0
+       (truncate (* my-overscroll-window-factor
+                    (window-text-height nil t)))))
+
+(defun my--pixel-scroll-active-p ()
+  "Return non-nil when precision pixel scrolling is active."
+  (and (bound-and-true-p pixel-scroll-precision-mode)
+       (fboundp 'pixel-scroll-precision-interpolate)))
+
+(defun my--point-window-row ()
+  "Return point's visual row within the selected window."
+  (let ((pos (posn-at-point)))
+    (or (cdr (posn-col-row pos)) 0)))
+
+(defun my--restore-point-window-row (row col)
+  "Move point back to ROW within the selected window and restore COL."
+  (move-to-window-line row)
+  (move-to-column col))
+
+(defun my--move-point-visual-lines (n)
+  "Move point by N visual lines, saturating at buffer boundaries."
+  (let ((line-move-visual t))
+    (condition-case nil
+        (line-move n t)
+      (beginning-of-buffer
+       (goto-char (point-min)))
+      (end-of-buffer
+       (goto-char (point-max))))))
+
+(defun my--window-at-bottom-p ()
+  "Return non-nil if the selected window is at bottom."
+  (pos-visible-in-window-p (point-max) nil t))
+
+(defun my--window-at-top-p ()
+  "Return non-nil if the selected window is at top."
+  (pos-visible-in-window-p (point-min) nil t))
+
+(defun my--scroll-window-forward (n)
+  "Scroll forward by N screen lines."
+  (if (my--pixel-scroll-active-p)
+      ;; pixel-scroll page-down uses negative delta
+      (pixel-scroll-precision-interpolate (- n) nil 1)
+    (scroll-up n)))
+
+(defun my--scroll-window-backward (n)
+  "Scroll backward by N screen lines."
+  (if (my--pixel-scroll-active-p)
+      ;; pixel-scroll page-up uses positive delta
+      (pixel-scroll-precision-interpolate n nil 1)
+    (scroll-down n)))
 
 (defun my-scroll-down-custom ()
-  "Scroll window down by a fraction of its height, move point accordingly."
+  "Scroll down by a fraction of the window height.
+Keeps point at roughly the same window row while scrolling.
+At bottom, allows limited overscroll, then moves to point-max."
   (interactive)
-  (let* ((move-lines (my--scroll-lines t t))
-         (scroll-lines (my--scroll-lines t nil))
-         (orig-line (line-number-at-pos))
-         (scroll-fn (if (bound-and-true-p pixel-scroll-precision-mode)
-         #'(lambda (l) (pixel-scroll-precision-interpolate  (* (pixel-line-height (point)) (- l))))
-         #'scroll-up)))
-;    (message "calling scroll-fn with %d lines" scroll-lines)
-    (unwind-protect
-        (when (not (equal scroll-lines 0))
-          (funcall scroll-fn scroll-lines))
-      (progn
- ;       (message "moving %d lines after going to beginning" (+ orig-line move-lines -1))
-        (goto-char (point-min)) ;; start safe
-        (forward-line (+ orig-line move-lines -1)))))) ;; -1 since line numbers are 1-based
+  (let ((n (my--scroll-step-lines))
+        (limit (my--overscroll-limit)))
+    ;; changing direction resets opposite-edge overscroll
+    (setq my--overscroll-up-count 0)
+    (if (my--window-at-bottom-p)
+        (let ((room (- limit my--overscroll-down-count)))
+          (if (> room 0)
+              (let ((step (min n room)))
+                (setq my--overscroll-down-count (+ my--overscroll-down-count step))
+                (my--move-point-visual-lines step))
+            (goto-char (point-max))))
+      (let ((row (my--point-window-row))
+            (col (current-column)))
+        (condition-case nil
+            (my--scroll-window-forward n)
+          (end-of-buffer
+           (goto-char (point-max))))
+        (my--restore-point-window-row row col)
+        (setq my--overscroll-down-count 0)))))
 
 (defun my-scroll-up-custom ()
-  "Scroll window up by a fraction of its height, move point accordingly."
+  "Scroll up by a fraction of the window height.
+Keeps point at roughly the same window row while scrolling.
+At top, allows limited overscroll, then moves to point-min."
   (interactive)
-  (let* ((move-lines (my--scroll-lines nil t))
-         (scroll-lines (my--scroll-lines nil nil))
-         (orig-line (line-number-at-pos))
-         (scroll-fn (if (bound-and-true-p pixel-scroll-precision-mode)
-         #'(lambda (l) (pixel-scroll-precision-interpolate  (* (pixel-line-height (point)) l)))
-       #'scroll-down)))
-    (unwind-protect
-        (when (not (equal scroll-lines 0))
-          (funcall scroll-fn scroll-lines))
-      (progn
-        (goto-char (point-min)) ;; start safe
-        (forward-line (max 0 (- orig-line move-lines 1))))))) ;; clamp at beginning
-
+  (let ((n (my--scroll-step-lines))
+        (limit (my--overscroll-limit)))
+    ;; changing direction resets opposite-edge overscroll
+    (setq my--overscroll-down-count 0)
+    (if (my--window-at-top-p)
+        (let ((room (- limit my--overscroll-up-count)))
+          (if (> room 0)
+              (let ((step (min n room)))
+                (setq my--overscroll-up-count (+ my--overscroll-up-count step))
+                (my--move-point-visual-lines (- step)))
+            (goto-char (point-min))))
+      (let ((row (my--point-window-row))
+            (col (current-column)))
+        (condition-case nil
+            (my--scroll-window-backward n)
+          (beginning-of-buffer
+           (goto-char (point-min))))
+        (my--restore-point-window-row row col)
+        (setq my--overscroll-up-count 0)))))
 
 
 (setq custom-file "~/.emacs.d/autogen_customize.el")
