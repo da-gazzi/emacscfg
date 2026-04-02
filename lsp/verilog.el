@@ -34,6 +34,7 @@
 (setq verible-formatter-port_declarations_alignment "align")
 (setq verible-formatter-port_declarations_indentation "indent")
 (setq verible-formatter-struct_union_members_alignment "align")
+(setq verible-formatter-try_wrap_long_lines "true")
 
  (use-package verilog-ts-mode)
 (add-to-list 'auto-mode-alist '("\\.s?vh?\\'" . verilog-ts-mode))
@@ -108,54 +109,40 @@ Generate the file list if it doesn't exist or if `Bender.yml` or `Bender.lock` h
       (bender-generate-file-list file-path))
     file-path))
 
-(defun bender-setup-verilog-eglot ()
-  "Setup `eglot` for Verilog mode dynamically."
-(let* ((file-list-path (bender-verilog-file-list-path))
-         (is-remote (file-remote-p default-directory))
-         (remote-prefix (when is-remote (file-remote-p default-directory 'method-user-host)))
-         (local-file-list-path (if is-remote
-                                   (tramp-file-name-localname (tramp-dissect-file-name file-list-path))
-                                 file-list-path))
-         (server-command (if is-remote
-                             ;; Run the language server remotely
-                             `(,remote-prefix "verible-verilog-ls")
-                           ;; Run locally
-                           "verible-verilog-ls")))
-    ;; Debug messages
-    (message "[DEBUG] bender-setup-verilog-eglot: Setting up Eglot for Verilog")
-    (message "[DEBUG] bender-setup-verilog-eglot: File list path: %s" file-list-path)
-    (message "[DEBUG] bender-setup-verilog-eglot: Remote editing detected? %s" (if is-remote "YES" "NO"))
-    (when is-remote
-      (message "[DEBUG] bender-setup-verilog-eglot: TRAMP remote prefix: %s" remote-prefix))
-    (message "[DEBUG] bender-setup-verilog-eglot: Server command: %s" (format "%s" server-command))
+(defun bender-verible-eglot-contact (&optional _interactive)
+  (let* ((file-list-path (bender-verilog-file-list-path))
+         (local-file-list-path
+          (if (file-remote-p file-list-path)
+              (tramp-file-name-localname
+               (tramp-dissect-file-name file-list-path))
+            file-list-path)))
+    (message "[DEBUG] eglot contact for %s -> %s"
+             default-directory local-file-list-path)
+    `("verible-verilog-ls"
+      "--file_list_path" ,local-file-list-path
+      "--column_limit" ,(number-to-string (or verible-formatter-column-limit 100))
+      "--indentation_spaces" ,(number-to-string (or verible-formatter-indentation-spaces 2))
+      "--line_break_penalty" ,(number-to-string (or verible-formatter-line-break-penalty 10))
+      "--over_column_limit_penalty" ,(number-to-string (or verible-formatter-over-column-limit-penalty 20))
+      "--wrap_spaces" ,(number-to-string (or verible-formatter-wrap-spaces 1))
+      "--assignment_statement_alignment" ,(format "%s" (or verible-formatter-assignment_statement_alignment "flush-left"))
+      "--case_items_alignment" ,(format "%s" (or verible-formatter-case_items_alignment "flush-left"))
+      "--class_member_variable_alignment" ,(format "%s" (or verible-formatter-class_member_variable_alignment "flush-left"))
+      "--distribution_items_alignment" ,(format "%s" (or verible-formatter-distribution_items_alignment "flush-left"))
+      "--enum_assignment_statement_alignment" ,(format "%s" (or verible-formatter-enum_assignment_statement_alignment "flush-left"))
+      "--formal_parameters_alignment" ,(format "%s" (or verible-formatter-formal_parameters_alignment "flush-left"))
+      "--formal_parameters_indentation" ,(format "%s" (or verible-formatter-formal_parameters_indentation "indent"))
+      "--module_net_variable_alignment" ,(format "%s" (or verible-formatter-module_net_variable_alignment "flush-left"))
+      "--named_parameter_alignment" ,(format "%s" (or verible-formatter-named_parameter_alignment "flush-left"))
+      "--named_parameter_indentation" ,(format "%s" (or verible-formatter-named_parameter_indentation "indent"))
+      "--named_port_alignment" ,(format "%s" (or verible-formatter-named_port_alignment "flush-left"))
+      "--named_port_indentation" ,(format "%s" (or verible-formatter-named_port_indentation "indent"))
+      "--port_declarations_alignment" ,(format "%s" (or verible-formatter-port_declarations_alignment "flush-left"))
+      "--port_declarations_indentation" ,(format "%s" (or verible-formatter-port_declarations_indentation "indent"))
+      "--struct_union_members_alignment" ,(format "%s" (or verible-formatter-struct_union_members_alignment "flush-left"))
+      "--try_wrap_long_lines" ,(format "%s" (or verible-formatter-try_wrap_long_lines "true")))))
 
-    (message "Setting up eglot for Verilog with file list path: %s" file-list-path)
-    (add-to-list 'eglot-server-programs
-                 `(verilog-mode .
-                   ("verible-verilog-ls"
-                    "--file_list_path" , local-file-list-path
-                    "--column_limit" ,(number-to-string (or verible-formatter-column-limit 100))
-                    "--indentation_spaces" ,(number-to-string (or verible-formatter-indentation-spaces 2))
-                    "--line_break_penalty" ,(number-to-string (or verible-formatter-line-break-penalty 10))
-                    "--over_column_limit_penalty" ,(number-to-string (or verible-formatter-over-column-limit-penalty 20))
-                    "--wrap_spaces" ,(number-to-string (or verible-formatter-wrap-spaces 1))
 
-                    "--assignment_statement_alignment"  ,(format "%s" (or verible-formatter-assignment_statement_alignment "flush-left"))
-                    "--case_items_alignment"  ,(format "%s" (or verible-formatter-case_items_alignment "flush-left"))
-                    "--class_member_variable_alignment"  ,(format "%s" (or verible-formatter-class_member_variable_alignment "flush-left"))
-                    "--distribution_items_alignment"  ,(format "%s" (or verible-formatter-distribution_items_alignment "flush-left"))
-                    "--enum_assignment_statement_alignment"  ,(format "%s" (or verible-formatter-enum_assignment_statement_alignment "flush-left"))
-                    "--formal_parameters_alignment"  ,(format "%s" (or verible-formatter-formal_parameters_alignment "flush-left"))
-                    "--formal_parameters_indentation"  ,(format "%s" (or verible-formatter-formal_parameters_indentation "flush-left"))
-                    "--module_net_variable_alignment"  ,(format "%s" (or verible-formatter-module_net_variable_alignment "flush-left"))
-                    "--named_parameter_alignment"  ,(format "%s" (or verible-formatter-named_parameter_alignment "flush-left"))
-                    "--named_parameter_indentation"  ,(format "%s" (or verible-formatter-named_parameter_indentation "flush-left"))
-                    "--named_port_alignment"  ,(format "%s" (or verible-formatter-named_port_alignment "flush-left"))
-                    "--named_port_indentation"  ,(format "%s" (or verible-formatter-named_port_indentation "indent"))
-                    "--port_declarations_alignment"  ,(format "%s" (or verible-formatter-port_declarations_alignment "flush-left"))
-                    "--port_declarations_indentation"  ,(format "%s" (or verible-formatter-port_declarations_indentation "flush-left"))
-                    "--struct_union_members_alignment"  ,(format "%s" (or verible-formatter-struct_union_members_alignment "flush-left"))
-                    )))))
 
 (defun my-run-verilog-formatter ()
   "Run `eglot-format-buffer` on the current buffer safely."
@@ -175,6 +162,16 @@ Generate the file list if it doesn't exist or if `Bender.yml` or `Bender.lock` h
   "Set up automatic formatting for Verilog."
   (add-hook 'before-save-hook #'my-run-verilog-formatter nil t))
 
-;; Enable for Verilog modes
-;(add-hook 'verilog-mode-hook 'my-setup-verilog-formatting)
-(add-hook 'verilog-mode-hook #'bender-setup-verilog-eglot)
+(with-eval-after-load 'eglot
+  (setq eglot-server-programs
+        (assq-delete-all 'verilog-mode eglot-server-programs))
+  (setq eglot-server-programs
+        (assq-delete-all 'verilog-ts-mode eglot-server-programs))
+
+  (add-to-list
+   'eglot-server-programs
+   `((verilog-mode verilog-ts-mode) . bender-verible-eglot-contact)))
+
+
+(add-hook 'verilog-mode-hook #'eglot-ensure)
+(add-hook 'verilog-ts-mode-hook #'eglot-ensure)
