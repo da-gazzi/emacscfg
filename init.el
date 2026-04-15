@@ -129,13 +129,13 @@ Should be a float between 0.1 and 1.0."
   "Return the normal scroll step in screen lines."
   (max 1
        (truncate (* my-scroll-window-factor
-                    (window-text-height nil t)))))
+                    (window-body-height)))))
 
 (defun my--overscroll-limit ()
   "Return the overscroll limit in screen lines."
   (max 0
        (truncate (* my-overscroll-window-factor
-                    (window-text-height nil t)))))
+                    (window-body-height)))))
 
 (defun my--pixel-scroll-active-p ()
   "Return non-nil when precision pixel scrolling is active."
