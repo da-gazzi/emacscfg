@@ -12,7 +12,15 @@
  '(company-show-quick-access t nil nil "Customized with use-package company")
  '(default-frame-alist
    '((font . "DejaVu Sans Mono 14") (fullscreen . maximized) (vertical-scroll-bars)))
+ '(ediff-window-setup-function 'ignore)
  '(eglot-events-buffer-config '(:size 2000000 :format lisp))
+ '(eglot-semantic-token-modifiers
+   '("declaration" "definition" "readonly" "static" "deprecated" "abstract" "async" "modification"
+     "documentation" "defaultLibrary"))
+ '(eglot-semantic-token-types
+   '("namespace" "type" "class" "enum" "interface" "struct" "typeParameter" "parameter" "variable"
+     "property" "enumMember" "event" "function" "method" "macro" "keyword" "modifier" "comment"
+     "string" "number" "regexp" "operator" "decorator"))
  '(global-treesit-auto-mode nil)
  '(helm-buffer-max-length 50)
  '(helm-ff-rsync-progress-bar-style 'text)
@@ -40,8 +48,7 @@
      (eval add-hook 'c++-mode-hook (lambda nil (c-set-offset 'access-label (lambda (_langelem) 1)))
            nil t)
      (eval add-hook 'c++-mode-hook
-           (lambda nil (c-set-offset 'access-label #'google-access-label-indent)) nil t)
-     (c-ts-mode-indent-offset . 2)))
+           (lambda nil (c-set-offset 'access-label #'google-access-label-indent)) nil t)))
  '(save-some-buffers-default-predicate 'save-some-buffers-root)
  '(split-height-threshold nil)
  '(switch-window-background t)
@@ -81,6 +88,8 @@
      (twig-mode . twig) (typescript-mode . typescript) (typescript-tsx-mode . tsx)
      (typst-mode . typst) (verilog-mode . verilog) (vhdl-mode . vhdl) (nxml-mode . xml)
      (yaml-mode . yaml) (k8s-mode . yaml) (zig-mode . zig)))
+ '(verilog-auto-indent-on-newline t)
+ '(verilog-auto-newline t)
  '(verilog-ts-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -88,9 +97,18 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(eglot-highlight-symbol-face ((t (:inherit bold))))
- '(eglot-semantic-definition ((t (:inherit font-lock-variable-use-face))))
- '(eglot-semantic-namespace ((t (:inherit (bold font-lock-misc-punctuation-face)))))
+ '(eglot-semantic-declaration ((t (:weight bold))))
+ '(eglot-semantic-definition ((t (:inherit font-lock-function-name-face))))
+ '(eglot-semantic-event ((t (:inherit font-lock-variable-name-face))))
+ '(eglot-semantic-function ((t (:inherit font-lock-function-name-face :weight medium))))
+ '(eglot-semantic-namespace ((t (:foreground "plum2" :weight bold))))
+ '(eglot-semantic-operator ((t (:inherit font-lock-operator-face))))
+ '(eglot-semantic-parameter ((t nil)))
+ '(eglot-semantic-static ((t nil)))
+ '(eglot-semantic-variable ((t (:inherit font-lock-variable-use-face))))
  '(font-lock-constant-face ((t (:foreground "gray82"))))
- '(font-lock-function-name-face ((t nil)))
+ '(font-lock-function-name-face ((t (:foreground "light green" :weight bold))))
+ '(font-lock-operator-face ((t (:foreground "LavenderBlush2"))))
  '(font-lock-punctuation-face ((t (:foreground "light green" :weight normal))))
+ '(font-lock-variable-use-face ((t (:inherit font-lock-variable-name-face :weight regular))))
  '(fringe ((t (:background "#282a36")))))
